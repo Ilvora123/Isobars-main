@@ -1,10 +1,14 @@
 {
   "company": {
-    "legalName": "ILVORA Healthcare Private Limited",
+    "name": "",
     "registeredOffice": "Kerala, India",
-    "registrationNumber": "To be updated",
     "cin": "To be updated",
-    "gstin": "To be updated"
+    "gstin": "To be updated",
+    "registrationNumber": "To be updated",
+    "phone1": "",
+    "phone2": "",
+    "email": "",
+    "mapUrl": ""
   },
   "services": [
     {
@@ -12,7 +16,9 @@
       "title": "Hospitals & Clinics",
       "description": "Patient-centred clinical environments designed to bring trusted care closer to communities.",
       "image": "assets/services-hospitals-clinics.jpeg",
-      "offerings": []
+      "offerings": [],
+      "name": "Ilvora health",
+      "shortDescription": "Ernakulam "
     },
     {
       "id": "pharmacy",
