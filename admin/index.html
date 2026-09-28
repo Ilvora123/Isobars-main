@@ -23,25 +23,32 @@
   box-sizing:border-box;
 }
 
+html{
+  scroll-behavior:smooth;
+}
+
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
   background:var(--cream);
   color:var(--text);
+  min-height:100vh;
 }
+
+/* HEADER */
 
 header{
   background:linear-gradient(135deg,var(--navy),var(--teal));
   color:white;
-  padding:18px 20px;
+  padding:16px 20px;
   position:sticky;
   top:0;
-  z-index:20;
-  box-shadow:0 3px 15px rgba(0,0,0,.15);
+  z-index:100;
+  box-shadow:0 4px 18px rgba(0,0,0,.16);
 }
 
 .header-inner{
-  max-width:1100px;
+  width:min(1100px,100%);
   margin:auto;
   display:flex;
   align-items:center;
@@ -52,54 +59,62 @@ header{
 .brand{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:13px;
 }
 
-.brand img{
-  width:48px;
-  height:48px;
+.brand-logo{
+  width:50px;
+  height:50px;
   object-fit:contain;
+  display:block;
   background:white;
   border-radius:50%;
   padding:4px;
 }
 
-.brand h1{
+.brand-text h1{
   margin:0;
-  font-size:19px;
+  font-size:20px;
+  line-height:1.2;
 }
 
-.brand span{
+.brand-text span{
   display:block;
-  font-size:11px;
-  opacity:.8;
-  margin-top:3px;
+  margin-top:4px;
+  font-size:12px;
+  opacity:.85;
 }
 
 .status{
   font-size:12px;
-  padding:7px 11px;
+  padding:7px 12px;
   border-radius:20px;
-  background:rgba(255,255,255,.15);
+  background:rgba(255,255,255,.16);
+  white-space:nowrap;
 }
+
+/* MAIN */
 
 .wrap{
   width:min(1100px,calc(100% - 28px));
   margin:25px auto 60px;
 }
 
+/* CARDS */
+
 .card{
-  background:white;
+  background:var(--white);
   border:1px solid var(--border);
   border-radius:18px;
-  padding:22px;
+  padding:23px;
   margin-bottom:20px;
-  box-shadow:0 8px 25px rgba(0,0,0,.05);
+  box-shadow:0 8px 28px rgba(0,0,0,.055);
 }
 
 h2{
   margin:0 0 8px;
   color:var(--navy);
+  font-size:25px;
 }
 
 h3{
@@ -108,13 +123,34 @@ h3{
 
 .muted{
   color:var(--muted);
-  line-height:1.5;
+  line-height:1.55;
 }
+
+/* LOGIN */
+
+.login-card{
+  max-width:760px;
+  margin:25px auto;
+}
+
+.login-logo{
+  width:105px;
+  height:105px;
+  display:block;
+  object-fit:contain;
+  margin:0 auto 18px;
+}
+
+.center{
+  text-align:center;
+}
+
+/* FORMS */
 
 .grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:16px;
+  gap:17px;
 }
 
 .field{
@@ -128,8 +164,9 @@ h3{
 }
 
 label{
-  font-weight:600;
+  font-weight:650;
   font-size:14px;
+  color:var(--text);
 }
 
 input,
@@ -137,25 +174,41 @@ textarea,
 select{
   width:100%;
   border:1px solid var(--border);
-  border-radius:10px;
-  padding:13px;
+  border-radius:11px;
+  padding:13px 14px;
   font-size:16px;
   background:white;
   color:var(--text);
+  outline:none;
+  transition:.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  border-color:var(--teal);
+  box-shadow:0 0 0 3px rgba(15,107,114,.10);
 }
 
 textarea{
-  min-height:110px;
+  min-height:115px;
   resize:vertical;
 }
 
+/* BUTTONS */
+
 button{
   border:0;
-  border-radius:10px;
+  border-radius:11px;
   padding:12px 17px;
   font-size:15px;
-  font-weight:600;
+  font-weight:650;
   cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+button:active{
+  transform:scale(.98);
 }
 
 .btn{
@@ -178,41 +231,56 @@ button{
   color:white;
 }
 
+.btn.light{
+  background:#eef4f5;
+  color:var(--navy);
+}
+
 .actions{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
-  margin-top:18px;
+  margin-top:20px;
 }
 
+/* NOTICE */
+
 .notice{
-  padding:13px 15px;
-  border-radius:10px;
-  margin-top:15px;
+  padding:14px 16px;
+  border-radius:11px;
+  margin-top:16px;
   background:#fff8dc;
   border:1px solid #ead28b;
   color:#6b5715;
+  line-height:1.5;
 }
 
-.success{
+.notice.success{
   background:#e8f7f0;
   border-color:#a9dfc7;
   color:var(--success);
 }
 
-.error{
+.notice.error{
   background:#fff0ef;
   border-color:#efb1ac;
   color:var(--danger);
 }
 
+/* TABS */
+
 .tabs{
   display:flex;
   gap:8px;
   overflow-x:auto;
-  padding-bottom:5px;
-  margin-bottom:20px;
+  padding-bottom:7px;
+  margin-bottom:22px;
   -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+
+.tabs::-webkit-scrollbar{
+  display:none;
 }
 
 .tab{
@@ -227,6 +295,8 @@ button{
   color:white;
 }
 
+/* PANELS */
+
 .panel{
   display:none;
 }
@@ -235,48 +305,79 @@ button{
   display:block;
 }
 
+/* EDIT ITEMS */
+
 .item{
   border:1px solid var(--border);
   border-radius:14px;
-  padding:16px;
+  padding:17px;
   margin-bottom:14px;
   background:#fcfdfd;
 }
 
 .item-header{
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
   gap:10px;
-  margin-bottom:12px;
+  margin-bottom:15px;
 }
 
 .item-header strong{
   color:var(--navy);
+  font-size:16px;
 }
 
-.small{
-  font-size:12px;
+.item-number{
   color:var(--muted);
+  font-size:12px;
 }
+
+/* EMPTY */
+
+.empty{
+  padding:25px;
+  border:1px dashed #c8d4d7;
+  border-radius:12px;
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:15px;
+}
+
+/* DIVIDER */
+
+.divider{
+  height:1px;
+  background:var(--border);
+  margin:20px 0;
+}
+
+/* FOOTER */
+
+.admin-footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:10px 0 35px;
+}
+
+/* HIDDEN */
 
 .hidden{
   display:none!important;
 }
 
-.login-logo{
-  display:block;
-  width:90px;
-  height:90px;
-  object-fit:contain;
-  margin:0 auto 15px;
+/* LOADING */
+
+.loading{
+  opacity:.65;
+  pointer-events:none;
 }
 
-.center{
-  text-align:center;
-}
+/* MOBILE */
 
 @media(max-width:700px){
+
   .grid{
     grid-template-columns:1fr;
   }
@@ -287,14 +388,41 @@ button{
 
   .card{
     padding:17px;
+    border-radius:15px;
   }
 
-  .header-inner{
-    align-items:flex-start;
+  .wrap{
+    width:calc(100% - 18px);
+    margin-top:15px;
+  }
+
+  .brand-logo{
+    width:44px;
+    height:44px;
+  }
+
+  .brand-text h1{
+    font-size:17px;
+  }
+
+  .brand-text span{
+    font-size:11px;
   }
 
   .status{
     display:none;
+  }
+
+  h2{
+    font-size:22px;
+  }
+
+  .item-header{
+    align-items:flex-start;
+  }
+
+  button{
+    min-height:44px;
   }
 }
 </style>
@@ -302,866 +430,609 @@ button{
 
 <body>
 
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
 <header>
+
   <div class="header-inner">
+
     <div class="brand">
-      <img src="../assets/ilvora-logo.png" alt="ILVORA Healthcare">
-      <div>
+
+      <img
+        class="brand-logo"
+        src="https://raw.githubusercontent.com/babu435raj-a11y/Isobars-main/main/assets/ilvora-logo.png"
+        alt="ILVORA Healthcare Logo"
+      >
+
+      <div class="brand-text">
         <h1>ILVORA Healthcare</h1>
         <span>Website Administration</span>
       </div>
+
     </div>
-    <div class="status" id="status">Not connected</div>
+
+    <div class="status" id="status">
+      Not connected
+    </div>
+
   </div>
+
 </header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
 
 <main class="wrap">
 
-<!-- CONNECTION -->
-<section class="card" id="setup">
+
+<!-- =========================================================
+     SETUP / LOGIN
+========================================================= -->
+
+<section class="card login-card" id="setup">
 
   <div class="center">
-    <img class="login-logo"
-         src="../assets/ilvora-logo.png"
-         alt="ILVORA Healthcare">
+
+    <img
+      class="login-logo"
+      src="https://raw.githubusercontent.com/babu435raj-a11y/Isobars-main/main/assets/ilvora-logo.png"
+      alt="ILVORA Healthcare Logo"
+    >
+
     <h2>ILVORA Website Admin</h2>
+
     <p class="muted">
-      Connect this administration panel to your GitHub website repository.
+      Connect this administration panel to your GitHub website
+      repository to manage your website content.
     </p>
+
   </div>
+
+
+  <div class="divider"></div>
+
 
   <div class="grid">
 
-    <div class="field">
-      <label>GitHub Username</label>
-      <input id="owner" value="babu435raj-a11y">
-    </div>
 
     <div class="field">
-      <label>Repository</label>
-      <input id="repo" value="Isobars-main">
+
+      <label for="owner">
+        GitHub Username
+      </label>
+
+      <input
+        id="owner"
+        type="text"
+        value="babu435raj-a11y"
+        autocomplete="username"
+      >
+
     </div>
 
-    <div class="field">
-      <label>Branch</label>
-      <input id="branch" value="main">
-    </div>
 
     <div class="field">
-      <label>GitHub Fine-Grained Token</label>
+
+      <label for="repo">
+        Repository
+      </label>
+
+      <input
+        id="repo"
+        type="text"
+        value="Isobars-main"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="branch">
+        Branch
+      </label>
+
+      <input
+        id="branch"
+        type="text"
+        value="main"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="token">
+        GitHub Fine-Grained Token
+      </label>
+
       <input
         id="token"
         type="password"
-        placeholder="Enter your GitHub token">
+        placeholder="Enter your GitHub token"
+        autocomplete="off"
+      >
+
     </div>
 
   </div>
 
+
   <div class="actions">
-    <button class="btn dark" onclick="connect()">
-      Connect & Load Website
+
+    <button
+      class="btn dark"
+      id="connectButton"
+      onclick="connect()"
+    >
+      Connect &amp; Load Website
     </button>
+
   </div>
 
+
   <div class="notice">
-    Your GitHub token must have repository
+
+    Your GitHub fine-grained token needs repository
     <b>Contents: Read and write</b> permission.
-    Do not share the token with anyone.
+
+    <br><br>
+
+    <b>Important:</b> Never share your GitHub token with anyone.
+
   </div>
+
 
   <div id="message"></div>
 
 </section>
 
 
-<!-- ADMIN APP -->
+<!-- =========================================================
+     ADMIN APPLICATION
+========================================================= -->
+
 <section id="app" class="hidden">
+
+
+  <!-- TABS -->
 
   <div class="card">
 
     <div class="tabs">
 
-      <button class="tab active"
-              onclick="showTab('services',this)">
+      <button
+        class="tab active"
+        onclick="showTab('services',this)"
+      >
         Services
       </button>
 
-      <button class="tab"
-              onclick="showTab('careers',this)">
+      <button
+        class="tab"
+        onclick="showTab('careers',this)"
+      >
         Careers
       </button>
 
-      <button class="tab"
-              onclick="showTab('opportunity',this)">
+      <button
+        class="tab"
+        onclick="showTab('opportunity',this)"
+      >
         Opportunity
       </button>
 
-      <button class="tab"
-              onclick="showTab('gallery',this)">
-        Gallery & Media
+      <button
+        class="tab"
+        onclick="showTab('gallery',this)"
+      >
+        Gallery &amp; Media
       </button>
 
-      <button class="tab"
-              onclick="showTab('company',this)">
+      <button
+        class="tab"
+        onclick="showTab('company',this)"
+      >
         Company Details
       </button>
 
     </div>
 
 
-    <!-- SERVICES -->
-    <div class="panel active" id="services">
+    <!-- =====================================================
+         SERVICES
+    ====================================================== -->
+
+    <div
+      class="panel active"
+      id="services"
+    >
 
       <h2>Services</h2>
 
       <p class="muted">
-        Edit the services displayed on the ILVORA Healthcare website.
+        Manage the services displayed on the ILVORA Healthcare
+        website.
       </p>
 
       <div id="servicesList"></div>
 
-      <button class="btn" onclick="addService()">
+      <button
+        class="btn"
+        onclick="addService()"
+      >
         + Add Service
       </button>
 
       <div class="actions">
-        <button class="btn gold" onclick="saveContent()">
+
+        <button
+          class="btn gold"
+          onclick="saveContent()"
+        >
           Save Services
         </button>
+
       </div>
 
     </div>
 
 
-    <!-- CAREERS -->
-    <div class="panel" id="careers">
+    <!-- =====================================================
+         CAREERS
+    ====================================================== -->
+
+    <div
+      class="panel"
+      id="careers"
+    >
 
       <h2>Careers</h2>
 
       <p class="muted">
-        Add or edit current job openings.
+        Add and manage current job openings.
       </p>
 
       <div id="careersList"></div>
 
-      <button class="btn" onclick="addCareer()">
+      <button
+        class="btn"
+        onclick="addCareer()"
+      >
         + Add Job Opening
       </button>
 
       <div class="actions">
-        <button class="btn gold" onclick="saveContent()">
+
+        <button
+          class="btn gold"
+          onclick="saveContent()"
+        >
           Save Careers
         </button>
+
       </div>
 
     </div>
 
 
-    <!-- OPPORTUNITY -->
-    <div class="panel" id="opportunity">
+    <!-- =====================================================
+         OPPORTUNITY
+    ====================================================== -->
+
+    <div
+      class="panel"
+      id="opportunity"
+    >
 
       <h2>Opportunity</h2>
 
       <p class="muted">
-        Manage investment and project opportunities displayed on the website.
+        Manage investment and project opportunities displayed
+        on the ILVORA Healthcare website.
       </p>
 
       <div id="opportunityList"></div>
 
-      <button class="btn" onclick="addOpportunity()">
+      <button
+        class="btn"
+        onclick="addOpportunity()"
+      >
         + Add Opportunity
       </button>
 
       <div class="actions">
-        <button class="btn gold" onclick="saveContent()">
+
+        <button
+          class="btn gold"
+          onclick="saveContent()"
+        >
           Save Opportunities
         </button>
+
       </div>
 
     </div>
 
 
-    <!-- GALLERY -->
-    <div class="panel" id="gallery">
+    <!-- =====================================================
+         GALLERY
+    ====================================================== -->
 
-      <h2>Gallery & Media</h2>
+    <div
+      class="panel"
+      id="gallery"
+    >
+
+      <h2>Gallery &amp; Media</h2>
 
       <p class="muted">
-        Add images or videos that should appear in the website gallery.
+        Manage images and videos displayed in the website
+        gallery.
       </p>
 
       <div id="galleryList"></div>
 
-      <button class="btn" onclick="addGallery()">
+      <button
+        class="btn"
+        onclick="addGallery()"
+      >
         + Add Media
       </button>
 
       <div class="actions">
-        <button class="btn gold" onclick="saveContent()">
+
+        <button
+          class="btn gold"
+          onclick="saveContent()"
+        >
           Save Gallery
         </button>
+
       </div>
 
     </div>
 
 
-    <!-- COMPANY -->
-    <div class="panel" id="company">
+    <!-- =====================================================
+         COMPANY DETAILS
+    ====================================================== -->
+
+    <div
+      class="panel"
+      id="company"
+    >
 
       <h2>Company Details</h2>
 
       <p class="muted">
-        Update the company information used by the website.
+        Update company contact and registration information.
       </p>
+
 
       <div class="grid">
 
-        <div class="field">
-          <label>Company Name</label>
-          <input id="companyName">
-        </div>
 
         <div class="field">
-          <label>Registered Office</label>
-          <input id="registeredOffice">
+
+          <label for="companyName">
+            Company Name
+          </label>
+
+          <input
+            id="companyName"
+            type="text"
+          >
+
         </div>
 
-        <div class="field">
-          <label>CIN</label>
-          <input id="cin">
-        </div>
 
         <div class="field">
-          <label>GSTIN</label>
-          <input id="gstin">
+
+          <label for="registeredOffice">
+            Registered Office
+          </label>
+
+          <input
+            id="registeredOffice"
+            type="text"
+          >
+
         </div>
 
-        <div class="field">
-          <label>Registration Number</label>
-          <input id="registrationNumber">
-        </div>
 
         <div class="field">
-          <label>Phone 1</label>
-          <input id="phone1">
+
+          <label for="cin">
+            CIN
+          </label>
+
+          <input
+            id="cin"
+            type="text"
+          >
+
         </div>
 
-        <div class="field">
-          <label>Phone 2</label>
-          <input id="phone2">
-        </div>
 
         <div class="field">
-          <label>Email</label>
-          <input id="email">
+
+          <label for="gstin">
+            GSTIN
+          </label>
+
+          <input
+            id="gstin"
+            type="text"
+          >
+
         </div>
+
+
+        <div class="field">
+
+          <label for="registrationNumber">
+            Registration Number
+          </label>
+
+          <input
+            id="registrationNumber"
+            type="text"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="phone1">
+            Phone 1
+          </label>
+
+          <input
+            id="phone1"
+            type="text"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="phone2">
+            Phone 2
+          </label>
+
+          <input
+            id="phone2"
+            type="text"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="email">
+            Email
+          </label>
+
+          <input
+            id="email"
+            type="email"
+          >
+
+        </div>
+
 
         <div class="field full">
-          <label>Google Maps URL</label>
-          <input id="mapUrl">
+
+          <label for="mapUrl">
+            Google Maps URL
+          </label>
+
+          <input
+            id="mapUrl"
+            type="url"
+          >
+
         </div>
+
 
       </div>
 
+
       <div class="actions">
-        <button class="btn gold" onclick="saveContent()">
+
+        <button
+          class="btn gold"
+          onclick="saveContent()"
+        >
           Save Company Details
         </button>
+
       </div>
 
     </div>
 
   </div>
 
+
+  <!-- DISCONNECT -->
+
   <div class="card">
-    <button class="btn red" onclick="disconnect()">
+
+    <button
+      class="btn red"
+      onclick="disconnect()"
+    >
       Disconnect
     </button>
+
   </div>
 
+
 </section>
+
+
+<div class="admin-footer">
+  ILVORA Healthcare Private Limited
+  <br>
+  Website Administration
+</div>
+
 
 </main>
 
 
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
 <script>
 
+"use strict";
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
 let content = {};
+
 let fileSha = "";
 
 
-/* ---------- HELPERS ---------- */
+
+/* =========================================================
+   HELPER
+========================================================= */
 
 function $(id){
+
   return document.getElementById(id);
+
 }
+
+
 
 function showMessage(text,type=""){
+
   $("message").innerHTML =
-    `<div class="notice ${type}">${text}</div>`;
-}
-
-
-/* ---------- CONNECT ---------- */
-
-async function connect(){
-
-  const owner = $("owner").value.trim();
-  const repo = $("repo").value.trim();
-  const branch = $("branch").value.trim();
-  const token = $("token").value.trim();
-
-  if(!owner || !repo || !branch || !token){
-    showMessage("Please complete all connection fields.","error");
-    return;
-  }
-
-  showMessage("Connecting to GitHub...");
-
-  try{
-
-    const url =
-      `https://api.github.com/repos/${owner}/${repo}/contents/data/content.json?ref=${branch}`;
-
-    const response = await fetch(url,{
-      headers:{
-        "Authorization":`Bearer ${token}`,
-        "Accept":"application/vnd.github+json"
-      }
-    });
-
-    if(!response.ok){
-      throw new Error(
-        "GitHub connection failed. Check your username, repository, branch and token permissions."
-      );
-    }
-
-    const data = await response.json();
-
-    fileSha = data.sha;
-
-    const decoded =
-      decodeURIComponent(
-        escape(
-          atob(data.content.replace(/\n/g,""))
-        )
-      );
-
-    content = JSON.parse(decoded);
-
-    localStorage.setItem("ilvora_owner",owner);
-    localStorage.setItem("ilvora_repo",repo);
-    localStorage.setItem("ilvora_branch",branch);
-    localStorage.setItem("ilvora_token",token);
-
-    $("setup").classList.add("hidden");
-    $("app").classList.remove("hidden");
-
-    $("status").textContent="Connected";
-
-    renderAll();
-
-  }catch(error){
-
-    showMessage(error.message,"error");
-
-  }
-}
-
-
-/* ---------- RENDER ---------- */
-
-function renderAll(){
-
-  renderServices();
-  renderCareers();
-  renderOpportunity();
-  renderGallery();
-  renderCompany();
+    '<div class="notice '+type+'">'+text+'</div>';
 
 }
 
 
-/* ---------- TABS ---------- */
-
-function showTab(id,button){
-
-  document.querySelectorAll(".panel")
-    .forEach(p=>p.classList.remove("active"));
-
-  document.querySelectorAll(".tab")
-    .forEach(b=>b.classList.remove("active"));
-
-  $(id).classList.add("active");
-
-  button.classList.add("active");
-
-}
-
-
-/* ---------- SERVICES ---------- */
-
-function renderServices(){
-
-  const list = $("servicesList");
-
-  list.innerHTML="";
-
-  content.services = content.services || [];
-
-  content.services.forEach((item,index)=>{
-
-    list.innerHTML += `
-
-      <div class="item">
-
-        <div class="item-header">
-          <strong>Service ${index+1}</strong>
-
-          <button
-            class="btn red"
-            onclick="removeService(${index})">
-            Delete
-          </button>
-        </div>
-
-        <div class="field">
-          <label>Service Name</label>
-          <input
-            value="${escapeHtml(item.name || "")}"
-            oninput="content.services[${index}].name=this.value">
-        </div>
-
-        <br>
-
-        <div class="field">
-          <label>Description</label>
-          <textarea
-            oninput="content.services[${index}].description=this.value">${escapeHtml(item.description || "")}</textarea>
-        </div>
-
-      </div>
-    `;
-
-  });
-
-}
-
-function addService(){
-
-  content.services.push({
-    name:"New Service",
-    description:""
-  });
-
-  renderServices();
-
-}
-
-function removeService(index){
-
-  content.services.splice(index,1);
-
-  renderServices();
-
-}
-
-
-/* ---------- CAREERS ---------- */
-
-function renderCareers(){
-
-  const list=$("careersList");
-
-  list.innerHTML="";
-
-  content.careers = content.careers || [];
-
-  content.careers.forEach((item,index)=>{
-
-    list.innerHTML += `
-
-      <div class="item">
-
-        <div class="item-header">
-          <strong>Job Opening ${index+1}</strong>
-
-          <button
-            class="btn red"
-            onclick="removeCareer(${index})">
-            Delete
-          </button>
-        </div>
-
-        <div class="grid">
-
-          <div class="field">
-            <label>Job Title</label>
-            <input
-              value="${escapeHtml(item.title || "")}"
-              oninput="content.careers[${index}].title=this.value">
-          </div>
-
-          <div class="field">
-            <label>Location</label>
-            <input
-              value="${escapeHtml(item.location || "")}"
-              oninput="content.careers[${index}].location=this.value">
-          </div>
-
-          <div class="field full">
-            <label>Description</label>
-            <textarea
-              oninput="content.careers[${index}].description=this.value">${escapeHtml(item.description || "")}</textarea>
-          </div>
-
-        </div>
-
-      </div>
-    `;
-
-  });
-
-}
-
-function addCareer(){
-
-  content.careers.push({
-    title:"New Position",
-    location:"",
-    description:""
-  });
-
-  renderCareers();
-
-}
-
-function removeCareer(index){
-
-  content.careers.splice(index,1);
-
-  renderCareers();
-
-}
-
-
-/* ---------- OPPORTUNITY ---------- */
-
-function renderOpportunity(){
-
-  const list=$("opportunityList");
-
-  list.innerHTML="";
-
-  content.opportunity = content.opportunity || [];
-
-  content.opportunity.forEach((item,index)=>{
-
-    list.innerHTML += `
-
-      <div class="item">
-
-        <div class="item-header">
-          <strong>Opportunity ${index+1}</strong>
-
-          <button
-            class="btn red"
-            onclick="removeOpportunity(${index})">
-            Delete
-          </button>
-        </div>
-
-        <div class="grid">
-
-          <div class="field">
-            <label>Project Name</label>
-            <input
-              value="${escapeHtml(item.name || "")}"
-              oninput="content.opportunity[${index}].name=this.value">
-          </div>
-
-          <div class="field">
-            <label>Status</label>
-            <input
-              value="${escapeHtml(item.status || "")}"
-              oninput="content.opportunity[${index}].status=this.value">
-          </div>
-
-          <div class="field full">
-            <label>Description</label>
-            <textarea
-              oninput="content.opportunity[${index}].description=this.value">${escapeHtml(item.description || "")}</textarea>
-          </div>
-
-        </div>
-
-      </div>
-    `;
-
-  });
-
-}
-
-function addOpportunity(){
-
-  content.opportunity.push({
-    name:"New Project",
-    status:"Open",
-    description:""
-  });
-
-  renderOpportunity();
-
-}
-
-function removeOpportunity(index){
-
-  content.opportunity.splice(index,1);
-
-  renderOpportunity();
-
-}
-
-
-/* ---------- GALLERY ---------- */
-
-function renderGallery(){
-
-  const list=$("galleryList");
-
-  list.innerHTML="";
-
-  content.gallery = content.gallery || [];
-
-  content.gallery.forEach((item,index)=>{
-
-    list.innerHTML += `
-
-      <div class="item">
-
-        <div class="item-header">
-          <strong>Media ${index+1}</strong>
-
-          <button
-            class="btn red"
-            onclick="removeGallery(${index})">
-            Delete
-          </button>
-        </div>
-
-        <div class="grid">
-
-          <div class="field">
-            <label>Media Type</label>
-
-            <select
-              onchange="content.gallery[${index}].type=this.value">
-
-              <option value="image"
-                ${item.type==="image"?"selected":""}>
-                Image
-              </option>
-
-              <option value="video"
-                ${item.type==="video"?"selected":""}>
-                Video
-              </option>
-
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Title</label>
-            <input
-              value="${escapeHtml(item.title || "")}"
-              oninput="content.gallery[${index}].title=this.value">
-          </div>
-
-          <div class="field full">
-            <label>Media URL</label>
-            <input
-              value="${escapeHtml(item.url || "")}"
-              oninput="content.gallery[${index}].url=this.value">
-          </div>
-
-        </div>
-
-      </div>
-    `;
-
-  });
-
-}
-
-function addGallery(){
-
-  content.gallery.push({
-    type:"image",
-    title:"",
-    url:""
-  });
-
-  renderGallery();
-
-}
-
-function removeGallery(index){
-
-  content.gallery.splice(index,1);
-
-  renderGallery();
-
-}
-
-
-/* ---------- COMPANY ---------- */
-
-function renderCompany(){
-
-  const c=content.company || {};
-
-  $("companyName").value=c.name || "";
-  $("registeredOffice").value=c.registeredOffice || "";
-  $("cin").value=c.cin || "";
-  $("gstin").value=c.gstin || "";
-  $("registrationNumber").value=c.registrationNumber || "";
-  $("phone1").value=c.phone1 || "";
-  $("phone2").value=c.phone2 || "";
-  $("email").value=c.email || "";
-  $("mapUrl").value=c.mapUrl || "";
-
-}
-
-
-function readCompany(){
-
-  content.company = {
-
-    name:$("companyName").value,
-
-    registeredOffice:$("registeredOffice").value,
-
-    cin:$("cin").value,
-
-    gstin:$("gstin").value,
-
-    registrationNumber:$("registrationNumber").value,
-
-    phone1:$("phone1").value,
-
-    phone2:$("phone2").value,
-
-    email:$("email").value,
-
-    mapUrl:$("mapUrl").value
-
-  };
-
-}
-
-
-/* ---------- SAVE ---------- */
-
-async function saveContent(){
-
-  readCompany();
-
-  const owner=$("owner").value.trim();
-  const repo=$("repo").value.trim();
-  const branch=$("branch").value.trim();
-  const token=$("token").value.trim();
-
-  if(!token){
-
-    alert("GitHub token is missing.");
-
-    return;
-
-  }
-
-  try{
-
-    const encoded =
-      btoa(
-        unescape(
-          encodeURIComponent(
-            JSON.stringify(content,null,2)
-          )
-        )
-      );
-
-    const url =
-      `https://api.github.com/repos/${owner}/${repo}/contents/data/content.json`;
-
-    const response=await fetch(url,{
-
-      method:"PUT",
-
-      headers:{
-        "Authorization":`Bearer ${token}`,
-        "Accept":"application/vnd.github+json",
-        "Content-Type":"application/json"
-      },
-
-      body:JSON.stringify({
-
-        message:"Update ILVORA website content",
-
-        content:encoded,
-
-        sha:fileSha,
-
-        branch:branch
-
-      })
-
-    });
-
-    if(!response.ok){
-
-      const error=await response.json();
-
-      throw new Error(
-        error.message || "Unable to save changes."
-      );
-
-    }
-
-    const result=await response.json();
-
-    fileSha=result.content.sha;
-
-    alert("Changes saved successfully to GitHub.");
-
-  }catch(error){
-
-    alert("Save failed: "+error.message);
-
-  }
-
-}
-
-
-/* ---------- DISCONNECT ---------- */
-
-function disconnect(){
-
-  localStorage.removeItem("ilvora_token");
-
-  $("app").classList.add("hidden");
-
-  $("setup").classList.remove("hidden");
-
-  $("status").textContent="Not connected";
-
-}
-
-
-/* ---------- ESCAPE HTML ---------- */
 
 function escapeHtml(value){
 
-  return String(value)
+  return String(value ?? "")
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
@@ -1169,6 +1040,1405 @@ function escapeHtml(value){
     .replaceAll("'","&#039;");
 
 }
+
+
+
+/* =========================================================
+   CONNECT TO GITHUB
+========================================================= */
+
+async function connect(){
+
+  const owner =
+    $("owner").value.trim();
+
+  const repo =
+    $("repo").value.trim();
+
+  const branch =
+    $("branch").value.trim();
+
+  const token =
+    $("token").value.trim();
+
+
+  if(
+    !owner ||
+    !repo ||
+    !branch ||
+    !token
+  ){
+
+    showMessage(
+      "Please complete all connection fields.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const button =
+    $("connectButton");
+
+  button.disabled=true;
+
+  button.textContent=
+    "Connecting...";
+
+
+  showMessage(
+    "Connecting to your GitHub repository..."
+  );
+
+
+  try{
+
+    const url =
+      "https://api.github.com/repos/"
+      + owner
+      + "/"
+      + repo
+      + "/contents/data/content.json?ref="
+      + encodeURIComponent(branch);
+
+
+    const response =
+      await fetch(
+        url,
+        {
+          method:"GET",
+
+          headers:{
+            "Authorization":
+              "Bearer "+token,
+
+            "Accept":
+              "application/vnd.github+json"
+          }
+        }
+      );
+
+
+    if(!response.ok){
+
+      let errorMessage =
+        "GitHub connection failed.";
+
+      try{
+
+        const error =
+          await response.json();
+
+        if(error.message){
+
+          errorMessage =
+            error.message;
+        }
+
+      }catch(e){}
+
+
+      throw new Error(errorMessage);
+    }
+
+
+    const data =
+      await response.json();
+
+
+    fileSha =
+      data.sha;
+
+
+    const encodedContent =
+      data.content.replace(/\n/g,"");
+
+
+    const decodedContent =
+      decodeURIComponent(
+        escape(
+          atob(encodedContent)
+        )
+      );
+
+
+    content =
+      JSON.parse(decodedContent);
+
+
+    if(!content.services)
+      content.services=[];
+
+    if(!content.careers)
+      content.careers=[];
+
+    if(!content.opportunity)
+      content.opportunity=[];
+
+    if(!content.gallery)
+      content.gallery=[];
+
+    if(!content.company)
+      content.company={};
+
+
+    /*
+      Keep connection information only in this
+      browser session.
+    */
+
+    sessionStorage.setItem(
+      "ilvora_owner",
+      owner
+    );
+
+    sessionStorage.setItem(
+      "ilvora_repo",
+      repo
+    );
+
+    sessionStorage.setItem(
+      "ilvora_branch",
+      branch
+    );
+
+    sessionStorage.setItem(
+      "ilvora_token",
+      token
+    );
+
+
+    $("setup")
+      .classList
+      .add("hidden");
+
+
+    $("app")
+      .classList
+      .remove("hidden");
+
+
+    $("status")
+      .textContent=
+      "Connected";
+
+
+    renderAll();
+
+
+  }catch(error){
+
+    showMessage(
+      "Connection failed: "
+      + error.message,
+      "error"
+    );
+
+
+  }finally{
+
+    button.disabled=false;
+
+    button.textContent=
+      "Connect & Load Website";
+
+  }
+
+}
+
+
+
+/* =========================================================
+   RENDER EVERYTHING
+========================================================= */
+
+function renderAll(){
+
+  renderServices();
+
+  renderCareers();
+
+  renderOpportunity();
+
+  renderGallery();
+
+  renderCompany();
+
+}
+
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+function showTab(id,button){
+
+  document
+    .querySelectorAll(".panel")
+    .forEach(
+      panel =>
+        panel.classList.remove("active")
+    );
+
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(
+      tab =>
+        tab.classList.remove("active")
+    );
+
+
+  $(id)
+    .classList
+    .add("active");
+
+
+  button
+    .classList
+    .add("active");
+
+}
+
+
+
+/* =========================================================
+   SERVICES
+========================================================= */
+
+function renderServices(){
+
+  const list =
+    $("servicesList");
+
+
+  list.innerHTML="";
+
+
+  if(
+    !content.services ||
+    content.services.length===0
+  ){
+
+    list.innerHTML =
+      '<div class="empty">'
+      + 'No services added yet.'
+      + '</div>';
+
+    return;
+  }
+
+
+  content.services
+    .forEach(
+      (item,index)=>{
+
+        list.innerHTML += `
+
+        <div class="item">
+
+          <div class="item-header">
+
+            <div>
+              <strong>
+                Service ${index+1}
+              </strong>
+              <div class="item-number">
+                Website service
+              </div>
+            </div>
+
+            <button
+              class="btn red"
+              onclick="removeService(${index})"
+            >
+              Delete
+            </button>
+
+          </div>
+
+
+          <div class="grid">
+
+            <div class="field">
+
+              <label>
+                Service Name
+              </label>
+
+              <input
+                value="${escapeHtml(item.name || "")}"
+                oninput="
+                  content.services[${index}].name=this.value
+                "
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Short Description
+              </label>
+
+              <input
+                value="${escapeHtml(item.shortDescription || "")}"
+                oninput="
+                  content.services[${index}].shortDescription=this.value
+                "
+              >
+
+            </div>
+
+
+            <div class="field full">
+
+              <label>
+                Description
+              </label>
+
+              <textarea
+                oninput="
+                  content.services[${index}].description=this.value
+                "
+              >${escapeHtml(item.description || "")}</textarea>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        `;
+
+      }
+    );
+
+}
+
+
+
+function addService(){
+
+  content.services.push({
+
+    name:"New Service",
+
+    shortDescription:"",
+
+    description:""
+
+  });
+
+
+  renderServices();
+
+}
+
+
+
+function removeService(index){
+
+  if(
+    !confirm(
+      "Delete this service?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  content.services.splice(
+    index,
+    1
+  );
+
+
+  renderServices();
+
+}
+
+
+
+/* =========================================================
+   CAREERS
+========================================================= */
+
+function renderCareers(){
+
+  const list =
+    $("careersList");
+
+
+  list.innerHTML="";
+
+
+  if(
+    !content.careers ||
+    content.careers.length===0
+  ){
+
+    list.innerHTML =
+      '<div class="empty">'
+      + 'No current job openings.'
+      + '<br><br>'
+      + 'Use "+ Add Job Opening" to publish a vacancy.'
+      + '</div>';
+
+    return;
+
+  }
+
+
+  content.careers
+    .forEach(
+      (item,index)=>{
+
+        list.innerHTML += `
+
+        <div class="item">
+
+          <div class="item-header">
+
+            <div>
+              <strong>
+                Job Opening ${index+1}
+              </strong>
+            </div>
+
+            <button
+              class="btn red"
+              onclick="removeCareer(${index})"
+            >
+              Delete
+            </button>
+
+          </div>
+
+
+          <div class="grid">
+
+            <div class="field">
+
+              <label>
+                Job Title
+              </label>
+
+              <input
+                value="${escapeHtml(item.title || "")}"
+                oninput="
+                  content.careers[${index}].title=this.value
+                "
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Location
+              </label>
+
+              <input
+                value="${escapeHtml(item.location || "")}"
+                oninput="
+                  content.careers[${index}].location=this.value
+                "
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Employment Type
+              </label>
+
+              <input
+                value="${escapeHtml(item.type || "")}"
+                oninput="
+                  content.careers[${index}].type=this.value
+                "
+                placeholder="Full-time / Part-time / Contract"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Application Link
+              </label>
+
+              <input
+                value="${escapeHtml(item.link || "")}"
+                oninput="
+                  content.careers[${index}].link=this.value
+                "
+                placeholder="https://..."
+              >
+
+            </div>
+
+
+            <div class="field full">
+
+              <label>
+                Job Description
+              </label>
+
+              <textarea
+                oninput="
+                  content.careers[${index}].description=this.value
+                "
+              >${escapeHtml(item.description || "")}</textarea>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        `;
+
+      }
+    );
+
+}
+
+
+
+function addCareer(){
+
+  content.careers.push({
+
+    title:"New Position",
+
+    location:"",
+
+    type:"",
+
+    link:"",
+
+    description:""
+
+  });
+
+
+  renderCareers();
+
+}
+
+
+
+function removeCareer(index){
+
+  if(
+    !confirm(
+      "Delete this job opening?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  content.careers.splice(
+    index,
+    1
+  );
+
+
+  renderCareers();
+
+}
+
+
+
+/* =========================================================
+   OPPORTUNITY
+========================================================= */
+
+function renderOpportunity(){
+
+  const list =
+    $("opportunityList");
+
+
+  list.innerHTML="";
+
+
+  if(
+    !content.opportunity ||
+    content.opportunity.length===0
+  ){
+
+    list.innerHTML =
+      '<div class="empty">'
+      + 'No opportunities currently published.'
+      + '<br><br>'
+      + 'Use "+ Add Opportunity" to create one.'
+      + '</div>';
+
+    return;
+
+  }
+
+
+  content.opportunity
+    .forEach(
+      (item,index)=>{
+
+        list.innerHTML += `
+
+        <div class="item">
+
+          <div class="item-header">
+
+            <strong>
+              Opportunity ${index+1}
+            </strong>
+
+            <button
+              class="btn red"
+              onclick="removeOpportunity(${index})"
+            >
+              Delete
+            </button>
+
+          </div>
+
+
+          <div class="grid">
+
+            <div class="field">
+
+              <label>
+                Project Name
+              </label>
+
+              <input
+                value="${escapeHtml(item.name || "")}"
+                oninput="
+                  content.opportunity[${index}].name=this.value
+                "
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Status
+              </label>
+
+              <input
+                value="${escapeHtml(item.status || "")}"
+                oninput="
+                  content.opportunity[${index}].status=this.value
+                "
+                placeholder="Open / Coming Soon / Closed"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Location
+              </label>
+
+              <input
+                value="${escapeHtml(item.location || "")}"
+                oninput="
+                  content.opportunity[${index}].location=this.value
+                "
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Contact / Enquiry Link
+              </label>
+
+              <input
+                value="${escapeHtml(item.link || "")}"
+                oninput="
+                  content.opportunity[${index}].link=this.value
+                "
+              >
+
+            </div>
+
+
+            <div class="field full">
+
+              <label>
+                Description
+              </label>
+
+              <textarea
+                oninput="
+                  content.opportunity[${index}].description=this.value
+                "
+              >${escapeHtml(item.description || "")}</textarea>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        `;
+
+      }
+    );
+
+}
+
+
+
+function addOpportunity(){
+
+  content.opportunity.push({
+
+    name:"New Project",
+
+    status:"Open",
+
+    location:"",
+
+    link:"",
+
+    description:""
+
+  });
+
+
+  renderOpportunity();
+
+}
+
+
+
+function removeOpportunity(index){
+
+  if(
+    !confirm(
+      "Delete this opportunity?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  content.opportunity.splice(
+    index,
+    1
+  );
+
+
+  renderOpportunity();
+
+}
+
+
+
+/* =========================================================
+   GALLERY
+========================================================= */
+
+function renderGallery(){
+
+  const list =
+    $("galleryList");
+
+
+  list.innerHTML="";
+
+
+  if(
+    !content.gallery ||
+    content.gallery.length===0
+  ){
+
+    list.innerHTML =
+      '<div class="empty">'
+      + 'No gallery media added yet.'
+      + '<br><br>'
+      + 'Use "+ Add Media" to add an image or video URL.'
+      + '</div>';
+
+    return;
+
+  }
+
+
+  content.gallery
+    .forEach(
+      (item,index)=>{
+
+        list.innerHTML += `
+
+        <div class="item">
+
+          <div class="item-header">
+
+            <strong>
+              Media ${index+1}
+            </strong>
+
+            <button
+              class="btn red"
+              onclick="removeGallery(${index})"
+            >
+              Delete
+            </button>
+
+          </div>
+
+
+          <div class="grid">
+
+            <div class="field">
+
+              <label>
+                Media Type
+              </label>
+
+              <select
+                onchange="
+                  content.gallery[${index}].type=this.value
+                "
+              >
+
+                <option
+                  value="image"
+                  ${item.type==="image"?"selected":""}
+                >
+                  Image
+                </option>
+
+                <option
+                  value="video"
+                  ${item.type==="video"?"selected":""}
+                >
+                  Video
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Title
+              </label>
+
+              <input
+                value="${escapeHtml(item.title || "")}"
+                oninput="
+                  content.gallery[${index}].title=this.value
+                "
+              >
+
+            </div>
+
+
+            <div class="field full">
+
+              <label>
+                Media URL
+              </label>
+
+              <input
+                value="${escapeHtml(item.url || "")}"
+                oninput="
+                  content.gallery[${index}].url=this.value
+                "
+                placeholder="https://..."
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+        `;
+
+      }
+    );
+
+}
+
+
+
+function addGallery(){
+
+  content.gallery.push({
+
+    type:"image",
+
+    title:"",
+
+    url:""
+
+  });
+
+
+  renderGallery();
+
+}
+
+
+
+function removeGallery(index){
+
+  if(
+    !confirm(
+      "Delete this media?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  content.gallery.splice(
+    index,
+    1
+  );
+
+
+  renderGallery();
+
+}
+
+
+
+/* =========================================================
+   COMPANY DETAILS
+========================================================= */
+
+function renderCompany(){
+
+  const c =
+    content.company || {};
+
+
+  $("companyName").value =
+    c.name || "";
+
+
+  $("registeredOffice").value =
+    c.registeredOffice || "";
+
+
+  $("cin").value =
+    c.cin || "";
+
+
+  $("gstin").value =
+    c.gstin || "";
+
+
+  $("registrationNumber").value =
+    c.registrationNumber || "";
+
+
+  $("phone1").value =
+    c.phone1 || "";
+
+
+  $("phone2").value =
+    c.phone2 || "";
+
+
+  $("email").value =
+    c.email || "";
+
+
+  $("mapUrl").value =
+    c.mapUrl || "";
+
+}
+
+
+
+function readCompany(){
+
+  content.company = {
+
+    name:
+      $("companyName").value.trim(),
+
+    registeredOffice:
+      $("registeredOffice").value.trim(),
+
+    cin:
+      $("cin").value.trim(),
+
+    gstin:
+      $("gstin").value.trim(),
+
+    registrationNumber:
+      $("registrationNumber").value.trim(),
+
+    phone1:
+      $("phone1").value.trim(),
+
+    phone2:
+      $("phone2").value.trim(),
+
+    email:
+      $("email").value.trim(),
+
+    mapUrl:
+      $("mapUrl").value.trim()
+
+  };
+
+}
+
+
+
+/* =========================================================
+   SAVE CONTENT TO GITHUB
+========================================================= */
+
+async function saveContent(){
+
+  readCompany();
+
+
+  const owner =
+    $("owner").value.trim();
+
+  const repo =
+    $("repo").value.trim();
+
+  const branch =
+    $("branch").value.trim();
+
+  const token =
+    $("token").value.trim();
+
+
+  if(!token){
+
+    alert(
+      "Your GitHub token is missing."
+    );
+
+    return;
+
+  }
+
+
+  const saveButtons =
+    document.querySelectorAll(
+      ".btn.gold"
+    );
+
+
+  saveButtons.forEach(
+    button=>{
+      button.disabled=true;
+      button.textContent="Saving...";
+    }
+  );
+
+
+  try{
+
+    const json =
+      JSON.stringify(
+        content,
+        null,
+        2
+      );
+
+
+    const encoded =
+      btoa(
+        unescape(
+          encodeURIComponent(json)
+        )
+      );
+
+
+    const url =
+      "https://api.github.com/repos/"
+      + owner
+      + "/"
+      + repo
+      + "/contents/data/content.json";
+
+
+    const response =
+      await fetch(
+        url,
+        {
+          method:"PUT",
+
+          headers:{
+            "Authorization":
+              "Bearer "+token,
+
+            "Accept":
+              "application/vnd.github+json",
+
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+
+            message:
+              "Update ILVORA website content",
+
+            content:
+              encoded,
+
+            sha:
+              fileSha,
+
+            branch:
+              branch
+
+          })
+        }
+      );
+
+
+    if(!response.ok){
+
+      let errorMessage =
+        "Unable to save changes.";
+
+      try{
+
+        const error =
+          await response.json();
+
+        if(error.message){
+
+          errorMessage =
+            error.message;
+
+        }
+
+      }catch(e){}
+
+
+      throw new Error(
+        errorMessage
+      );
+
+    }
+
+
+    const result =
+      await response.json();
+
+
+    if(
+      result &&
+      result.content &&
+      result.content.sha
+    ){
+
+      fileSha =
+        result.content.sha;
+
+    }
+
+
+    alert(
+      "Changes saved successfully."
+      + "\n\n"
+      + "Your ILVORA website content has been updated on GitHub."
+    );
+
+
+  }catch(error){
+
+    alert(
+      "Save failed:\n\n"
+      + error.message
+    );
+
+
+  }finally{
+
+    saveButtons.forEach(
+      button=>{
+        button.disabled=false;
+      }
+    );
+
+
+    /*
+      Restore correct labels
+    */
+
+    $("services")
+      .querySelector(".btn.gold")
+      .textContent=
+      "Save Services";
+
+
+    $("careers")
+      .querySelector(".btn.gold")
+      .textContent=
+      "Save Careers";
+
+
+    $("opportunity")
+      .querySelector(".btn.gold")
+      .textContent=
+      "Save Opportunities";
+
+
+    $("gallery")
+      .querySelector(".btn.gold")
+      .textContent=
+      "Save Gallery";
+
+
+    $("company")
+      .querySelector(".btn.gold")
+      .textContent=
+      "Save Company Details";
+
+  }
+
+}
+
+
+
+/* =========================================================
+   DISCONNECT
+========================================================= */
+
+function disconnect(){
+
+  if(
+    !confirm(
+      "Disconnect from GitHub?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  sessionStorage.removeItem(
+    "ilvora_owner"
+  );
+
+  sessionStorage.removeItem(
+    "ilvora_repo"
+  );
+
+  sessionStorage.removeItem(
+    "ilvora_branch"
+  );
+
+  sessionStorage.removeItem(
+    "ilvora_token"
+  );
+
+
+  $("token").value="";
+
+
+  $("app")
+    .classList
+    .add("hidden");
+
+
+  $("setup")
+    .classList
+    .remove("hidden");
+
+
+  $("status")
+    .textContent=
+    "Not connected";
+
+
+  $("message")
+    .innerHTML="";
+
+}
+
+
+
+/* =========================================================
+   AUTO-FILL SAVED SESSION
+========================================================= */
+
+(function(){
+
+  const owner =
+    sessionStorage.getItem(
+      "ilvora_owner"
+    );
+
+  const repo =
+    sessionStorage.getItem(
+      "ilvora_repo"
+    );
+
+  const branch =
+    sessionStorage.getItem(
+      "ilvora_branch"
+    );
+
+  const token =
+    sessionStorage.getItem(
+      "ilvora_token"
+    );
+
+
+  if(owner)
+    $("owner").value=owner;
+
+
+  if(repo)
+    $("repo").value=repo;
+
+
+  if(branch)
+    $("branch").value=branch;
+
+
+  if(token)
+    $("token").value=token;
+
+})();
 
 </script>
 
