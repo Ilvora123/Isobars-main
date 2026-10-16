@@ -1,5 +1,27 @@
 <!doctype html>
 <html lang="en">
+  
+<script>
+(function () {
+  var host = "ilvorahealthcare.com";
+
+  if (
+    window.location.hostname === "www.ilvorahealthcare.com" ||
+    (
+      window.location.hostname === host &&
+      window.location.protocol !== "https:"
+    )
+  ) {
+    window.location.replace(
+      "https://" + host +
+      window.location.pathname +
+      window.location.search +
+      window.location.hash
+    );
+  }
+})();
+</script>
+
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
