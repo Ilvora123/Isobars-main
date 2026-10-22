@@ -116,6 +116,32 @@ footer {
     min-width: 0;
   }
 }
+  /* ILVORA desktop contact layout fix */
+@media (min-width: 761px) {
+  #contact .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+    width: 100%;
+    max-width: none;
+  }
+
+  #contact .contact-grid > * {
+    min-width: 0;
+  }
+
+  #contact .contact-hero {
+    min-width: 0;
+    width: 100%;
+  }
+
+  #contact .form {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
 </style>
 </head>
 <body>
