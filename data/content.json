@@ -16,7 +16,15 @@
       "title": "Hospitals & Clinics",
       "description": "Patient-centred clinical environments designed to bring trusted care closer to communities.",
       "image": "services-hospitals-clinics.jpeg",
-      "offerings": [],
+      "offerings": [
+        {
+          "title": "Neelambari Hospital ",
+          "description": "A 25 Bedded Hospital in Thamarakulam ",
+          "image": "uploads/services/1792731275761-IMG_5638.jpeg",
+          "video": "",
+          "pdf": ""
+        }
+      ],
       "name": "Ilvora health",
       "shortDescription": "Ernakulam "
     },
@@ -24,15 +32,19 @@
       "id": "pharmacy",
       "title": "Pharmacy",
       "description": "Trusted medicines and responsible pharmacy services supporting safer, more convenient care.",
-      "image": "services-pharmacy.jpeg",
-      "offerings": []
+      "image": "uploads/services/1792731317649-IMG_5637.jpeg",
+      "offerings": [],
+      "name": "Pharmacy",
+      "shortDescription": "Trusted medicines and responsible pharmacy services supporting safer, more convenient care."
     },
     {
       "id": "laboratory",
       "title": "Health Laboratory",
       "description": "Accurate diagnostic insights that help clinicians and patients make informed decisions.",
-      "image": "services-health-laboratory.jpeg",
-      "offerings": []
+      "image": "uploads/services/1792731302909-IMG_5639.jpeg",
+      "offerings": [],
+      "name": "Health Laboratory",
+      "shortDescription": "Accurate diagnostic insights that help clinicians and patients make informed decisions."
     }
   ],
   "careers": {
