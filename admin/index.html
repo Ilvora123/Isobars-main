@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ILVORA Healthcare — Admin</title>
+ 
+<style>
+:root{
+ --navy:#062c36;
+ --teal:#0f6b72;
+ --gold:#c9a45c;
+ --cream:#f8f5ef;
+ --text:#203038;
+ --muted:#68777d;
+ --border:#dce3e5;
+ --danger:#b42318;
+}
+ 
+*{
+ box-sizing:border-box;
+}
+ 
+body{
+ margin:0;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+ background:var(--cream);
+ color:var(--text);
+}
+ 
+header{
+ background:linear-gradient(135deg,var(--navy),var(--teal));
+ color:#fff;
+ padding:16px 20px;
+ position:sticky;
+ top:0;
+ z-index:10;
+ box-shadow:0 4px 18px #0002;
+}
+ 
+.header-inner{
+ width:min(1100px,calc(100% - 28px));
+ margin:auto;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+}
+ 
+.brand{
+ display:flex;
+ align-items:center;
+ gap:13px;
+}
+ 
+.brand-logo{
+ width:50px;
+ height:50px;
+ object-fit:contain;
+ display:block;
+ background:#fff;
+ border-radius:50%;
+ padding:4px;
+}
+ 
+.brand h1{
+ margin:0;
+ font-size:20px;
+}
+ 
+.brand span{
+ font-size:12px;
+ opacity:.85;
+}
+ 
+.status{
+ font-size:12px;
+ padding:7px 12px;
+ border-radius:20px;
+ background:#ffffff29;
+}
+ 
+.wrap{
+ width:min(1100px,calc(100% - 28px));
+ margin:24px auto 50px;
+}
+ 
+.card{
+ background:#fff;
+ border:1px solid var(--border);
+ border-radius:18px;
+ padding:23px;
+ margin-bottom:20px;
+ box-shadow:0 8px 28px #0000000d;
+}
+ 
+h2{
+ margin:0 0 8px;
+ color:var(--navy);
+ font-size:25px;
+}
+ 
+.muted{
+ color:var(--muted);
+ line-height:1.55;
+}
+ 
+.center{
+ text-align:center;
+}
+ 
+.login-logo{
+ width:105px;
+ height:105px;
+ object-fit:contain;
+ display:block;
+ margin:0 auto 18px;
+}
+ 
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:17px;
+}
+ 
+.field{
+ display:flex;
+ flex-direction:column;
+ gap:7px;
+}
+ 
+.field.full{
+ grid-column:1/-1;
+}
+ 
+label{
+ font-weight:650;
+ font-size:14px;
+}
+ 
+input,
+textarea,
+select{
+ width:100%;
+ border:1px solid var(--border);
+ border-radius:11px;
+ padding:13px 14px;
+ font-size:16px;
+ background:#fff;
+ color:var(--text);
+ outline:none;
+}
+ 
+textarea{
+ min-height:115px;
+ resize:vertical;
+}
+ 
+button{
+ border:0;
+ border-radius:11px;
+ padding:12px 17px;
+ font-size:15px;
+ font-weight:650;
+ cursor:pointer;
+ min-height:44px;
+}
+ 
+.btn{
+ background:var(--teal);
+ color:#fff;
+}
+ 
+.btn.gold{
+ background:var(--gold);
+ color:var(--navy);
+}
+ 
+.btn.dark{
+ background:var(--navy);
+ color:#fff;
+}
+ 
+.btn.red{
+ background:var(--danger);
+ color:#fff;
+}
+ 
+.actions{
+ display:flex;
+ flex-wrap:wrap;
+ gap:10px;
+ margin-top:20px;
+}
+ 
+.notice{
+ padding:14px 16px;
+ border-radius:11px;
+ margin-top:16px;
+ background:#fff8dc;
+ border:1px solid #ead28b;
+ color:#6b5715;
+ line-height:1.5;
+}
+ 
+.notice.error{
+ background:#fff0ef;
+ border-color:#efb1ac;
+ color:var(--danger);
+}
+ 
+.tabs{
+ display:flex;
+ gap:8px;
+ overflow-x:auto;
+ padding-bottom:7px;
+ margin-bottom:22px;
+ scrollbar-width:none;
+}
+ 
+.tabs::-webkit-scrollbar{
+ display:none;
+}
+ 
+.tab{
+ white-space:nowrap;
+ background:#fff;
+ border:1px solid var(--border);
+ color:var(--navy);
+}
+ 
+.tab.active{
+ background:var(--navy);
+ color:#fff;
+}
+ 
+.panel{
+ display:none;
+}
+ 
+.panel.active{
+ display:block;
+}
+ 
+.item{
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:17px;
+ margin-bottom:14px;
+ background:#fcfdfd;
+}
+ 
+.item-header{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ margin-bottom:15px;
+}
+ 
+.empty{
+ padding:25px;
+ border:1px dashed #c8d4d7;
+ border-radius:12px;
+ text-align:center;
+ color:var(--muted);
+ margin-bottom:15px;
+}
+ 
+.divider{
+ height:1px;
+ background:var(--border);
+ margin:20px 0;
+}
+ 
+.hidden{
+ display:none!important;
+}
+ 
+@media(max-width:700px){
+ 
+ .grid{
+   grid-template-columns:1fr;
+ }
+ 
+ .field.full{
+   grid-column:auto;
+ }
+ 
+ .card{
+   padding:17px;
+ }
+ 
+ .wrap{
+   width:calc(100% - 18px);
+   margin-top:15px;
+ }
+ 
+ .brand-logo{
+   width:44px;
+   height:44px;
+ }
+ 
+ .brand h1{
+   font-size:17px;
+ }
+ 
+ .status{
+   display:none;
+ }
+}
+</style>
+</head>
+ 
+<body>
+ 
+<header>
+ 
+<div class="header-inner">
+ 
+<div class="brand">
+ 
+<img
+class="brand-logo"
+src="/Isobars-main/ilvora-logo.png"
+alt="ILVORA Healthcare"
+>
+ 
+<div>
+ 
+<h1>ILVORA Healthcare</h1>
+ 
+<span>Website Administration</span>
+ 
+</div>
+ 
+</div>
+ 
+<div
+class="status"
+id="status"
+>
+Not connected
+</div>
+ 
+</div>
+ 
+</header>
+ 
+ 
+<main class="wrap">
+ 
+ 
+<section
+class="card"
+id="setup"
+>
+ 
+<div class="center">
+ 
+<img
+class="login-logo"
+src="/Isobars-main/ilvora-logo.png"
+alt="ILVORA Healthcare"
+>
+ 
+<h2>ILVORA Website Admin</h2>
+ 
+<p class="muted">
+Connect this administration panel to your GitHub website repository
+to manage your website content.
+</p>
+ 
+</div>
+ 
+ 
+<div class="divider"></div>
+ 
+ 
+<div class="grid">
+ 
+ 
+<div class="field">
+ 
+<label>
+GitHub Username
+</label>
+ 
+<input
+id="owner"
+value="babu435raj-a11y"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Repository
+</label>
+ 
+<input
+id="repo"
+value="Isobars-main"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Branch
+</label>
+ 
+<input
+id="branch"
+value="main"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+GitHub Fine-Grained Token
+</label>
+ 
+<input
+id="token"
+type="password"
+placeholder="Enter your GitHub token"
+autocomplete="off"
+>
+ 
+</div>
+ 
+</div>
+ 
+ 
+<div class="actions">
+ 
+<button
+class="btn dark"
+id="connectButton"
+onclick="connect()"
+>
+Connect &amp; Load Website
+</button>
+ 
+</div>
+ 
+ 
+<div class="notice">
+ 
+Your GitHub fine-grained token needs repository
+<b>Contents: Read and write</b>
+permission.
+ 
+<br><br>
+ 
+<b>Important:</b>
+Never share your GitHub token with anyone.
+ 
+</div>
+ 
+ 
+<div id="message"></div>
+ 
+</section>
+ 
+ 
+<section
+id="app"
+class="hidden"
+>
+ 
+ 
+<div class="card">
+ 
+ 
+<div class="tabs">
+ 
+ 
+<button
+class="tab active"
+onclick="showTab('services',this)"
+>
+Services
+</button>
+ 
+ 
+<button
+class="tab"
+onclick="showTab('careers',this)"
+>
+Careers
+</button>
+ 
+ 
+<button
+class="tab"
+onclick="showTab('opportunity',this)"
+>
+Opportunity
+</button>
+ 
+ 
+<button
+class="tab"
+onclick="showTab('gallery',this)"
+>
+Gallery &amp; Media
+</button>
+ 
+ 
+<button
+class="tab"
+onclick="showTab('company',this)"
+>
+Company Details
+</button>
+ 
+ 
+</div>
+ 
+ 
+<!-- SERVICES -->
+ 
+<div
+class="panel active"
+id="services"
+>
+ 
+<h2>Services</h2>
+ 
+<p class="muted">
+Manage services displayed on the ILVORA Healthcare website.
+</p>
+ 
+<div id="servicesList"></div>
+ 
+<button
+class="btn"
+onclick="addService()"
+>
++ Add Service
+</button>
+ 
+<div class="actions">
+ 
+<button
+class="btn gold"
+onclick="saveContent()"
+>
+Save Services
+</button>
+ 
+</div>
+ 
+</div>
+ 
+ 
+<!-- CAREERS -->
+ 
+<div
+class="panel"
+id="careers"
+>
+ 
+<h2>Careers</h2>
+ 
+<p class="muted">
+Add and manage current job openings.
+</p>
+ 
+<div id="careersList"></div>
+ 
+<button
+class="btn"
+onclick="addCareer()"
+>
++ Add Job Opening
+</button>
+ 
+<div class="actions">
+ 
+<button
+class="btn gold"
+onclick="saveContent()"
+>
+Save Careers
+</button>
+ 
+</div>
+ 
+</div>
+ 
+ 
+<!-- OPPORTUNITY -->
+ 
+<div
+class="panel"
+id="opportunity"
+>
+ 
+<h2>Opportunity</h2>
+ 
+<p class="muted">
+Manage investment and project opportunities.
+</p>
+ 
+<div id="opportunityList"></div>
+ 
+<button
+class="btn"
+onclick="addOpportunity()"
+>
++ Add Opportunity
+</button>
+ 
+<div class="actions">
+ 
+<button
+class="btn gold"
+onclick="saveContent()"
+>
+Save Opportunities
+</button>
+ 
+</div>
+ 
+</div>
+ 
+ 
+<!-- GALLERY -->
+ 
+<div
+class="panel"
+id="gallery"
+>
+ 
+<h2>Gallery &amp; Media</h2>
+ 
+<p class="muted">
+Manage media URLs used by the website.
+Existing root-level media can be referenced with
+<code>/Isobars-main/filename</code>.
+</p>
+ 
+<div id="galleryList"></div>
+ 
+<button
+class="btn"
+onclick="addGallery()"
+>
++ Add Media
+</button>
+ 
+<div class="actions">
+ 
+<button
+class="btn gold"
+onclick="saveContent()"
+>
+Save Gallery
+</button>
+ 
+</div>
+ 
+</div>
+ 
+ 
+<!-- COMPANY -->
+ 
+<div
+class="panel"
+id="company"
+>
+ 
+<h2>Company Details</h2>
+ 
+<p class="muted">
+Update company contact and registration information.
+</p>
+ 
+ 
+<div class="grid">
+ 
+ 
+<div class="field">
+ 
+<label>
+Company Name
+</label>
+ 
+<input id="companyName">
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Registered Office
+</label>
+ 
+<input id="registeredOffice">
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+CIN
+</label>
+ 
+<input id="cin">
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+GSTIN
+</label>
+ 
+<input id="gstin">
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Registration Number
+</label>
+ 
+<input id="registrationNumber">
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Phone 1
+</label>
+ 
+<input id="phone1">
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Phone 2
+</label>
+ 
+<input id="phone2">
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Email
+</label>
+ 
+<input
+id="email"
+type="email"
+>
+ 
+</div>
+ 
+ 
+<div class="field full">
+ 
+<label>
+Google Maps URL
+</label>
+ 
+<input
+id="mapUrl"
+type="url"
+>
+ 
+</div>
+ 
+ 
+</div>
+ 
+ 
+<div class="actions">
+ 
+<button
+class="btn gold"
+onclick="saveContent()"
+>
+Save Company Details
+</button>
+ 
+</div>
+ 
+</div>
+ 
+</div>
+ 
+ 
+<div class="card">
+ 
+<button
+class="btn red"
+onclick="disconnect()"
+>
+Disconnect
+</button>
+ 
+</div>
+ 
+ 
+</section>
+ 
+</main>
+ 
+ 
+<script>
+ 
+let content={};
+ 
+let fileSha="";
+ 
+ 
+const $=id=>
+document.getElementById(id);
+ 
+ 
+function escapeHtml(v){
+ 
+return String(v??"")
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+ 
+}
+ 
+ 
+function showMessage(t,c=""){
+ 
+$("message").innerHTML=
+'<div class="notice '+c+'">'+
+t+
+'</div>';
+ 
+}
+ 
+ 
+/* CONNECT */
+ 
+async function connect(){
+ 
+const owner=
+$("owner").value.trim();
+ 
+const repo=
+$("repo").value.trim();
+ 
+const branch=
+$("branch").value.trim();
+ 
+const token=
+$("token").value.trim();
+ 
+ 
+if(
+!owner||
+!repo||
+!branch||
+!token
+){
+ 
+showMessage(
+"Please complete all connection fields.",
+"error"
+);
+ 
+return;
+ 
+}
+ 
+ 
+$("connectButton").disabled=true;
+ 
+$("connectButton").textContent=
+"Connecting...";
+ 
+ 
+try{
+ 
+const response=
+await fetch(
+ 
+`https://api.github.com/repos/${owner}/${repo}/contents/data/content.json?ref=${encodeURIComponent(branch)}`,
+ 
+{
+ 
+headers:{
+ 
+"Authorization":
+"Bearer "+token,
+ 
+"Accept":
+"application/vnd.github+json"
+ 
+}
+ 
+}
+ 
+);
+ 
+ 
+if(!response.ok){
+ 
+let error={};
+ 
+try{
+ 
+error=
+await response.json();
+ 
+}catch(e){}
+ 
+throw new Error(
+error.message||
+"GitHub connection failed."
+);
+ 
+}
+ 
+ 
+const data=
+await response.json();
+ 
+ 
+fileSha=
+data.sha;
+ 
+ 
+const decoded=
+decodeURIComponent(
+escape(
+atob(
+data.content.replace(/\n/g,"")
+)
+)
+);
+ 
+ 
+content=
+JSON.parse(decoded);
+ 
+ 
+content.services=(Array.isArray(content.services)?content.services:[]).map((x,i)=>({...x,name:x.name||x.title||'Service',shortDescription:x.shortDescription||x.description||'',description:x.description||x.shortDescription||'',image:x.image||''}));
+content.careers=Array.isArray(content.careers)?content.careers:(content.careers?.vacancies||[]);
+content.opportunity=Array.isArray(content.opportunity)?content.opportunity:(content.opportunity?.projects||[]);
+content.gallery=Array.isArray(content.gallery)?content.gallery:[];
+content.company=content.company||{};
+ 
+ 
+sessionStorage.setItem(
+"ilvora_owner",
+owner
+);
+ 
+sessionStorage.setItem(
+"ilvora_repo",
+repo
+);
+ 
+sessionStorage.setItem(
+"ilvora_branch",
+branch
+);
+ 
+sessionStorage.setItem(
+"ilvora_token",
+token
+);
+ 
+ 
+$("setup")
+.classList
+.add("hidden");
+ 
+ 
+$("app")
+.classList
+.remove("hidden");
+ 
+ 
+$("status")
+.textContent=
+"Connected";
+ 
+ 
+renderAll();
+ 
+ 
+}catch(error){
+ 
+showMessage(
+"Connection failed: "+
+error.message,
+"error"
+);
+ 
+}
+ 
+ 
+finally{
+ 
+$("connectButton").disabled=false;
+ 
+$("connectButton").textContent=
+"Connect & Load Website";
+ 
+}
+ 
+}
+ 
+ 
+/* TABS */
+ 
+function showTab(id,button){
+ 
+document
+.querySelectorAll(".panel")
+.forEach(
+x=>x.classList.remove("active")
+);
+ 
+ 
+document
+.querySelectorAll(".tab")
+.forEach(
+x=>x.classList.remove("active")
+);
+ 
+ 
+$(id)
+.classList
+.add("active");
+ 
+ 
+button
+.classList
+.add("active");
+ 
+}
+ 
+ 
+/* RENDER */
+ 
+function renderAll(){
+ 
+renderServices();
+ 
+renderCareers();
+ 
+renderOpportunity();
+ 
+renderGallery();
+ 
+renderCompany();
+ 
+}
+ 
+ 
+/* SERVICES */
+ 
+function renderServices(){
+const list=$("servicesList");
+list.innerHTML="";
+if(!Array.isArray(content.services)||!content.services.length){
+ list.innerHTML='<div class="empty">No services added yet.</div>';
+ return;
+}
+content.services.forEach((item,index)=>{
+ item.offerings=Array.isArray(item.offerings)?item.offerings:[];
+ list.innerHTML+=`
+ <div class="item">
+  <div class="item-header"><strong>Service category ${index+1}</strong><button class="btn red" onclick="removeService(${index})">Delete category</button></div>
+  <div class="grid">
+   <div class="field"><label>Category name</label><input value="${escapeHtml(item.name||item.title||'')}" oninput="content.services[${index}].name=this.value;content.services[${index}].title=this.value"></div>
+   <div class="field"><label>Short description</label><input value="${escapeHtml(item.shortDescription||item.description||'')}" oninput="content.services[${index}].shortDescription=this.value"></div>
+   <div class="field full"><label>Full description</label><textarea oninput="content.services[${index}].description=this.value">${escapeHtml(item.description||item.shortDescription||'')}</textarea></div>
+   <div class="field full"><label>Category image path / URL</label><input value="${escapeHtml(item.image||'')}" placeholder="uploads/services/image-name.jpg" oninput="content.services[${index}].image=this.value"><small>Use the upload button below to upload a new category image.</small></div>
+  </div>
+  <div class="item" style="margin-top:16px;background:#fbfaf7;border:1px solid #e4e8e7">
+   <div class="item-header"><strong>Items under this category</strong><button class="btn" onclick="addServiceOffering(${index})">+ Add item</button></div>
+   <p class="muted">Add and edit the individual services, descriptions, images, videos and public PDF documents shown when visitors open this category.</p>
+   <div id="serviceOfferings-${index}">${renderServiceOfferingMarkup(item,index)}</div>
+  </div>
+ </div>`;
+});
+}
+function renderServiceOfferingMarkup(item,serviceIndex){
+const offers=Array.isArray(item.offerings)?item.offerings:[];
+if(!offers.length)return '<div class="empty">No items added under this category yet.</div>';
+return offers.map((o,oi)=>{
+ if(typeof o==='string')o={title:o};
+ return `<div class="item" style="margin:10px 0;background:#fff">
+  <div class="item-header"><strong>${escapeHtml(o.title||('Item '+(oi+1)))}</strong><button class="btn red" onclick="removeServiceOffering(${serviceIndex},${oi})">Delete item</button></div>
+  <div class="grid">
+   <div class="field"><label>Item / service title</label><input value="${escapeHtml(o.title||'')}" oninput="content.services[${serviceIndex}].offerings[${oi}].title=this.value"></div>
+   <div class="field"><label>Image path / URL</label><input value="${escapeHtml(o.image||'')}" placeholder="uploads/services/example.jpg" oninput="content.services[${serviceIndex}].offerings[${oi}].image=this.value"></div>
+   <div class="field full"><label>Description</label><textarea oninput="content.services[${serviceIndex}].offerings[${oi}].description=this.value">${escapeHtml(o.description||'')}</textarea></div>
+   <div class="field"><label>Video path / URL (optional)</label><input value="${escapeHtml(o.video||'')}" placeholder="uploads/services/example.mp4" oninput="content.services[${serviceIndex}].offerings[${oi}].video=this.value"></div>
+   <div class="field"><label>PDF path / URL (optional)</label><input value="${escapeHtml(o.pdf||'')}" placeholder="uploads/services/document.pdf" oninput="content.services[${serviceIndex}].offerings[${oi}].pdf=this.value"></div>
+   <div class="field full"><label>Upload files for this item</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+     <label class="btn" style="display:inline-block;cursor:pointer">Upload image<input type="file" accept="image/*" hidden onchange="uploadServiceOfferingAsset(${serviceIndex},${oi},'image',this)"></label>
+     <label class="btn" style="display:inline-block;cursor:pointer">Upload video<input type="file" accept="video/*" hidden onchange="uploadServiceOfferingAsset(${serviceIndex},${oi},'video',this)"></label>
+     <label class="btn" style="display:inline-block;cursor:pointer">Upload PDF<input type="file" accept=".pdf,application/pdf" hidden onchange="uploadServiceOfferingAsset(${serviceIndex},${oi},'pdf',this)"></label>
+   </div><small>Uploads are public on the website. Upload limit: 20 MB per file.</small></div>
+  </div>
+ </div>`;
+}).join('');
+}
+function addServiceOffering(serviceIndex){
+const service=content.services[serviceIndex];
+service.offerings=Array.isArray(service.offerings)?service.offerings:[];
+service.offerings.push({title:'New service item',description:'',image:'',video:'',pdf:''});
+renderServices();
+}
+function removeServiceOffering(serviceIndex,offeringIndex){
+if(!confirm('Delete this item from the service category?'))return;
+content.services[serviceIndex].offerings.splice(offeringIndex,1);
+renderServices();
+}
+async function uploadServiceOfferingAsset(serviceIndex,offeringIndex,field,input){
+const file=input.files&&input.files[0]; if(!file)return;
+const folder='services';
+try{
+ if(field==='image'&&!file.type.startsWith('image/'))throw new Error('Choose an image file.');
+ if(field==='video'&&!file.type.startsWith('video/'))throw new Error('Choose a video file.');
+ if(field==='pdf'&&file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf'))throw new Error('Choose a PDF file.');
+ const path=await uploadAsset(file,folder);
+ const offering=content.services[serviceIndex].offerings[offeringIndex];
+ offering[field]=path;
+ renderServices();
+ showMessage('Uploaded '+file.name+'. Click Save Services to publish the updated item.','success');
+}catch(e){showMessage('Upload failed: '+e.message,'error');}
+finally{input.value='';}
+}
+function addService(){
+content.services.push({name:'New Service Category',title:'New Service Category',shortDescription:'',description:'',image:'',offerings:[]});
+renderServices();
+}
+function removeService(i){
+if(confirm('Delete this service category and its items?')){content.services.splice(i,1);renderServices();}
+}
+ 
+/* CAREERS */
+ 
+function renderCareers(){
+ 
+const list=
+$("careersList");
+ 
+list.innerHTML="";
+ 
+ 
+if(!content.careers.length){
+ 
+list.innerHTML=
+'<div class="empty">'+
+'No current job openings.'+
+'<br><br>'+
+'Use "+ Add Job Opening" to publish a vacancy.'+
+'</div>';
+ 
+return;
+ 
+}
+ 
+ 
+content.careers.forEach(
+(item,index)=>{
+ 
+list.innerHTML+=`
+ 
+<div class="item">
+ 
+<div class="item-header">
+ 
+<strong>
+Job Opening ${index+1}
+</strong>
+ 
+<button
+class="btn red"
+onclick="removeCareer(${index})"
+>
+Delete
+</button>
+ 
+</div>
+ 
+ 
+<div class="grid">
+ 
+ 
+<div class="field">
+ 
+<label>
+Job Title
+</label>
+ 
+<input
+value="${escapeHtml(item.title)}"
+oninput="
+content.careers[${index}].title=this.value
+"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Location
+</label>
+ 
+<input
+value="${escapeHtml(item.location)}"
+oninput="
+content.careers[${index}].location=this.value
+"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Employment Type
+</label>
+ 
+<input
+value="${escapeHtml(item.type)}"
+oninput="
+content.careers[${index}].type=this.value
+"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Application Link
+</label>
+ 
+<input
+value="${escapeHtml(item.link)}"
+oninput="
+content.careers[${index}].link=this.value
+"
+>
+ 
+</div>
+ 
+ 
+<div class="field full">
+ 
+<label>
+Job Description
+</label>
+ 
+<textarea
+oninput="
+content.careers[${index}].description=this.value
+"
+>${escapeHtml(item.description)}</textarea>
+ 
+</div>
+ 
+ 
+</div>
+ 
+</div>
+ 
+`;
+ 
+}
+ 
+);
+ 
+}
+ 
+ 
+function addCareer(){
+ 
+content.careers.push({
+ 
+title:"New Position",
+ 
+location:"",
+ 
+type:"",
+ 
+link:"",
+ 
+description:"",
+image:"",
+pdf:"",
+video:""
+ 
+});
+ 
+renderCareers();
+ 
+}
+ 
+ 
+function removeCareer(i){
+ 
+if(
+confirm("Delete this job opening?")
+){
+ 
+content.careers.splice(i,1);
+ 
+renderCareers();
+ 
+}
+ 
+}
+ 
+ 
+/* OPPORTUNITY */
+ 
+function renderOpportunity(){
+ 
+const list=
+$("opportunityList");
+ 
+list.innerHTML="";
+ 
+ 
+if(!content.opportunity.length){
+ 
+list.innerHTML=
+'<div class="empty">'+
+'No opportunities currently published.'+
+'</div>';
+ 
+return;
+ 
+}
+ 
+ 
+content.opportunity.forEach(
+(item,index)=>{
+ 
+list.innerHTML+=`
+ 
+<div class="item">
+ 
+<div class="item-header">
+ 
+<strong>
+Opportunity ${index+1}
+</strong>
+ 
+<button
+class="btn red"
+onclick="removeOpportunity(${index})"
+>
+Delete
+</button>
+ 
+</div>
+ 
+ 
+<div class="grid">
+ 
+ 
+<div class="field">
+ 
+<label>
+Project Name
+</label>
+ 
+<input
+value="${escapeHtml(item.name)}"
+oninput="
+content.opportunity[${index}].name=this.value
+"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Status
+</label>
+ 
+<input
+value="${escapeHtml(item.status)}"
+oninput="
+content.opportunity[${index}].status=this.value
+"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Location
+</label>
+ 
+<input
+value="${escapeHtml(item.location)}"
+oninput="
+content.opportunity[${index}].location=this.value
+"
+>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Contact / Enquiry Link
+</label>
+ 
+<input
+value="${escapeHtml(item.link)}"
+oninput="
+content.opportunity[${index}].link=this.value
+"
+>
+ 
+</div>
+ 
+ 
+<div class="field full">
+ 
+<label>
+Description
+</label>
+ 
+<textarea
+oninput="
+content.opportunity[${index}].description=this.value
+"
+>${escapeHtml(item.description)}</textarea>
+ 
+</div>
+ 
+<div class="field full">
+<label>Project image path</label>
+<input value="${escapeHtml(item.image||'')}" placeholder="Uploaded image path will appear here" oninput="content.opportunity[${index}].image=this.value">
+</div>
+<div class="field full">
+<label>Project PDF path</label>
+<input value="${escapeHtml(item.pdf||'')}" placeholder="Uploaded PDF path will appear here" oninput="content.opportunity[${index}].pdf=this.value">
+</div>
+<div class="field full">
+<label>Project video path</label>
+<input value="${escapeHtml(item.video||'')}" placeholder="Uploaded video path will appear here" oninput="content.opportunity[${index}].video=this.value">
+</div>
+ 
+</div>
+ 
+</div>
+ 
+`;
+ 
+}
+ 
+);
+ 
+}
+ 
+ 
+function addOpportunity(){
+ 
+content.opportunity.push({
+ 
+name:"New Project",
+ 
+status:"Open",
+ 
+location:"",
+ 
+link:"",
+ 
+description:""
+ 
+});
+ 
+renderOpportunity();
+ 
+}
+ 
+ 
+function removeOpportunity(i){
+ 
+if(
+confirm("Delete this opportunity?")
+){
+ 
+content.opportunity.splice(i,1);
+ 
+renderOpportunity();
+ 
+}
+ 
+}
+ 
+ 
+/* GALLERY */
+ 
+function renderGallery(){
+ 
+const list=
+$("galleryList");
+ 
+list.innerHTML="";
+ 
+ 
+if(!content.gallery.length){
+ 
+list.innerHTML=
+'<div class="empty">'+
+'No gallery media added yet.'+
+'</div>';
+ 
+return;
+ 
+}
+ 
+ 
+content.gallery.forEach(
+(item,index)=>{
+ 
+list.innerHTML+=`
+ 
+<div class="item">
+ 
+<div class="item-header">
+ 
+<strong>
+Media ${index+1}
+</strong>
+ 
+<button
+class="btn red"
+onclick="removeGallery(${index})"
+>
+Delete
+</button>
+ 
+</div>
+ 
+ 
+<div class="grid">
+ 
+ 
+<div class="field">
+ 
+<label>
+Media Type
+</label>
+ 
+<select
+onchange="
+content.gallery[${index}].type=this.value
+"
+>
+ 
+<option
+value="image"
+${item.type==="image"?"selected":""}
+>
+Image
+</option>
+ 
+<option
+value="video"
+${item.type==="video"?"selected":""}
+>
+Video
+</option>
+<option
+value="pdf"
+${item.type==="pdf"?"selected":""}
+>
+PDF document
+</option>
+ 
+</select>
+ 
+</div>
+ 
+ 
+<div class="field">
+ 
+<label>
+Title
+</label>
+ 
+<input
+value="${escapeHtml(item.title)}"
+oninput="
+content.gallery[${index}].title=this.value
+"
+>
+ 
+</div>
+ 
+<div class="field full">
+<label>Impact gallery caption (optional)</label>
+<input value="${escapeHtml(item.caption||'')}" oninput="content.gallery[${index}].caption=this.value" placeholder="Short caption shown below the media">
+</div>
+ 
+<div class="field full">
+ 
+<label>
+Media URL / Repository Path
+</label>
+ 
+<input
+value="${escapeHtml(item.url)}"
+oninput="
+content.gallery[${index}].url=this.value
+"
+placeholder="uploads/gallery/your-file-name.jpg or video path"
+>
+ 
+</div>
+ 
+ 
+</div>
+ 
+</div>
+ 
+`;
+ 
+}
+ 
+);
+ 
+}
+ 
+ 
+function addGallery(){
+ 
+content.gallery.push({
+ 
+type:"image",
+ 
+title:"",
+caption:"",
+url:""
+ 
+});
+ 
+renderGallery();
+ 
+}
+ 
+ 
+function removeGallery(i){
+ 
+if(
+confirm("Delete this media?")
+){
+ 
+content.gallery.splice(i,1);
+ 
+renderGallery();
+ 
+}
+ 
+}
+ 
+ 
+/* COMPANY */
+ 
+function renderCompany(){
+ 
+const c=
+content.company||{};
+ 
+ 
+$("companyName").value=
+c.name||"";
+ 
+ 
+$("registeredOffice").value=
+c.registeredOffice||"";
+ 
+ 
+$("cin").value=
+c.cin||"";
+ 
+ 
+$("gstin").value=
+c.gstin||"";
+ 
+ 
+$("registrationNumber").value=
+c.registrationNumber||"";
+ 
+ 
+$("phone1").value=
+c.phone1||"";
+ 
+ 
+$("phone2").value=
+c.phone2||"";
+ 
+ 
+$("email").value=
+c.email||"";
+ 
+ 
+$("mapUrl").value=
+c.mapUrl||"";
+ 
+}
+ 
+ 
+function readCompany(){
+ 
+content.company={
+ 
+name:
+$("companyName").value.trim(),
+ 
+registeredOffice:
+$("registeredOffice").value.trim(),
+ 
+cin:
+$("cin").value.trim(),
+ 
+gstin:
+$("gstin").value.trim(),
+ 
+registrationNumber:
+$("registrationNumber").value.trim(),
+ 
+phone1:
+$("phone1").value.trim(),
+ 
+phone2:
+$("phone2").value.trim(),
+ 
+email:
+$("email").value.trim(),
+ 
+mapUrl:
+$("mapUrl").value.trim()
+ 
+};
+ 
+}
+ 
+ 
+/* SAVE */
+ 
+async function saveContent(){
+ 
+readCompany();
+ 
+ 
+const owner=
+$("owner").value.trim();
+ 
+const repo=
+$("repo").value.trim();
+ 
+const branch=
+$("branch").value.trim();
+ 
+const token=
+$("token").value.trim();
+ 
+ 
+if(!token){
+ 
+alert(
+"Your GitHub token is missing."
+);
+ 
+return;
+ 
+}
+ 
+ 
+try{
+ 
+const publishContent={...content,
+services:(content.services||[]).map(x=>({...x,title:x.title||x.name||'Healthcare Service',name:x.name||x.title||'Healthcare Service',description:x.description||x.shortDescription||'',shortDescription:x.shortDescription||x.description||''})),
+careers:{...(content.careersMeta||{}),vacancies:content.careers||[]},
+opportunity:{...(content.opportunityMeta||{}),projects:(content.opportunity||[]).map(x=>({...x,title:x.title||x.name,name:x.name||x.title}))},
+gallery:content.gallery||[],
+company:content.company||{}
+};
+delete publishContent.careersMeta; delete publishContent.opportunityMeta;
+const encoded=
+btoa(unescape(encodeURIComponent(JSON.stringify(publishContent,null,2))));
+ 
+ 
+const response=
+await fetch(
+ 
+`https://api.github.com/repos/${owner}/${repo}/contents/data/content.json`,
+ 
+{
+ 
+method:"PUT",
+ 
+headers:{
+ 
+"Authorization":
+"Bearer "+token,
+ 
+"Accept":
+"application/vnd.github+json",
+ 
+"Content-Type":
+"application/json"
+ 
+},
+ 
+body:JSON.stringify({
+ 
+message:
+"Update ILVORA website content",
+ 
+content:
+encoded,
+ 
+sha:
+fileSha,
+ 
+branch:
+branch
+ 
+})
+ 
+}
+ 
+);
+ 
+ 
+if(!response.ok){
+ 
+let error={};
+ 
+try{
+ 
+error=
+await response.json();
+ 
+}catch(e){}
+ 
+throw new Error(
+error.message||
+"Unable to save changes."
+);
+ 
+}
+ 
+ 
+const result=
+await response.json();
+ 
+ 
+if(
+result.content &&
+result.content.sha
+){
+ 
+fileSha=
+result.content.sha;
+ 
+}
+ 
+ 
+alert(
+"Changes saved successfully to GitHub."
+);
+ 
+}
+ 
+catch(error){
+ 
+alert(
+"Save failed:\n\n"+
+error.message
+);
+ 
+}
+ 
+}
+ 
+ 
+ 
+/* PUBLIC MEDIA UPLOADS: files are committed to this repository and become public. */
+function uploadContextForList(listId,index){
+if(listId==='servicesList') return [{field:'image',folder:'services',accept:'image/*',label:'Upload category image'}];
+if(listId==='careersList') return [{field:'pdf',folder:'careers',accept:'.pdf,application/pdf',label:'Upload job PDF'}];
+if(listId==='opportunityList') return [
+ {field:'image',folder:'projects',accept:'image/*',label:'Upload project image'},
+ {field:'pdf',folder:'projects',accept:'.pdf,application/pdf',label:'Upload project PDF'},
+ {field:'video',folder:'projects',accept:'video/*',label:'Upload project video'}
+];
+if(listId==='galleryList') return [
+ {field:'url',folder:'gallery',accept:'image/*',label:'Upload gallery image',type:'image'},
+ {field:'url',folder:'gallery',accept:'video/*',label:'Upload gallery video',type:'video'}
+];
+return [];
+}
+function githubPathForAsset(folder,file){
+const clean=String(file.name||'file').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(-110)||'file';
+return `uploads/${folder}/${Date.now()}-${clean}`;
+}
+async function uploadAsset(file,folder){
+const owner=sessionStorage.getItem('ilvora_owner')||$('owner').value.trim();
+const repo=sessionStorage.getItem('ilvora_repo')||$('repo').value.trim();
+const branch=sessionStorage.getItem('ilvora_branch')||$('branch').value.trim();
+const token=sessionStorage.getItem('ilvora_token')||$('token').value.trim();
+if(!owner||!repo||!branch||!token) throw new Error('Connect to GitHub before uploading.');
+if(file.size>20*1024*1024) throw new Error('Please choose a file smaller than 20 MB for this browser-based upload.');
+const path=githubPathForAsset(folder,file);
+const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Could not read selected file.'));reader.readAsDataURL(file);});
+const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:`Upload ILVORA ${folder} asset: ${file.name}`,content:base64,branch})});
+const data=await res.json(); if(!res.ok) throw new Error(data.message||'GitHub file upload failed.');
+return path;
+}
+function currentRecord(listId,index){
+if(listId==='servicesList') return content.services[index];
+if(listId==='careersList') return content.careers[index];
+if(listId==='opportunityList') return content.opportunity[index];
+if(listId==='galleryList') return content.gallery[index];
+}
+function syncUploadField(listId,index,field,path,type){
+const rec=currentRecord(listId,index); if(!rec)return;
+rec[field]=path;
+if(type)rec.type=type;
+const item=document.querySelectorAll('#'+listId+' .item')[index];
+if(item){
+ const inputs=item.querySelectorAll('input');
+ // Keep the editable path field in sync with the uploaded file.
+ if(listId==='galleryList'){
+  const urlInput=Array.from(inputs).find(x=>x.placeholder&&x.placeholder.includes('uploads/gallery'));
+  if(urlInput)urlInput.value=path;
+  const typeSelect=item.querySelector('select');if(typeSelect&&type)typeSelect.value=type;
+ } else if(listId==='opportunityList') {
+  const labelMap={image:'Project image path',pdf:'Project PDF path',video:'Project video path'};
+  const label=labelMap[field];
+  if(label){const lab=Array.from(item.querySelectorAll('label')).find(x=>x.textContent.trim()===label);const input=lab&&lab.parentElement.querySelector('input');if(input)input.value=path;}
+ }
+ item.querySelectorAll('[data-upload-status]').forEach(x=>x.textContent='Uploaded: '+path+' — click Save to publish the link.');
+}
+showMessage('File uploaded to '+path+'. Click Save to publish its content link.','success');
+}
+function installUploadControls(){
+['servicesList','careersList','opportunityList','galleryList'].forEach(listId=>{
+ const list=$(listId); if(!list)return;
+ Array.from(list.querySelectorAll('.item')).forEach((item,index)=>{
+  if(item.dataset.uploadControls==='yes')return;
+  const specs=uploadContextForList(listId,index); if(!specs.length)return;
+  item.dataset.uploadControls='yes';
+  const wrap=document.createElement('div');wrap.className='field full';
+  wrap.style.cssText='margin-top:12px;padding-top:12px;border-top:1px solid #e7e5df';
+  wrap.innerHTML='<label>Upload media / documents</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div><small data-upload-status style="display:block;margin-top:7px;color:#52706a">Files uploaded here will be publicly accessible on the website.</small>';
+  const buttons=wrap.querySelector('div');
+  specs.forEach(spec=>{
+   const input=document.createElement('input');input.type='file';input.accept=spec.accept;input.hidden=true;
+   const button=document.createElement('button');button.type='button';button.className='btn';button.textContent=spec.label;
+   button.addEventListener('click',()=>input.click());
+   input.addEventListener('change',async()=>{
+    const file=input.files&&input.files[0];if(!file)return;
+    button.disabled=true;button.textContent='Uploading…';
+    try{const path=await uploadAsset(file,spec.folder);syncUploadField(listId,index,spec.field,path,spec.type);}
+    catch(e){showMessage('Upload failed: '+e.message,'error');}
+    finally{button.disabled=false;button.textContent=spec.label;input.value='';}
+   });
+   buttons.append(button,input);
+  });
+  item.appendChild(wrap);
+ });
+});
+}
+const uploadObserver=new MutationObserver(()=>installUploadControls());
+['servicesList','careersList','opportunityList','galleryList'].forEach(id=>{const el=$(id);if(el)uploadObserver.observe(el,{childList:true});});
+setTimeout(installUploadControls,0);
+ 
+ 
+/* DISCONNECT */
+ 
+function disconnect(){
+ 
+if(
+!confirm(
+"Disconnect from GitHub?"
+)
+){
+ 
+return;
+ 
+}
+ 
+ 
+sessionStorage.clear();
+ 
+ 
+$("token").value="";
+ 
+ 
+$("app")
+.classList
+.add("hidden");
+ 
+ 
+$("setup")
+.classList
+.remove("hidden");
+ 
+ 
+$("status")
+.textContent=
+"Not connected";
+ 
+}
+ 
+ 
+/* SESSION */
+ 
+(function(){
+ 
+const owner=
+sessionStorage.getItem(
+"ilvora_owner"
+);
+ 
+const repo=
+sessionStorage.getItem(
+"ilvora_repo"
+);
+ 
+const branch=
+sessionStorage.getItem(
+"ilvora_branch"
+);
+ 
+const token=
+sessionStorage.getItem(
+"ilvora_token"
+);
+ 
+ 
+if(owner)
+$("owner").value=owner;
+ 
+ 
+if(repo)
+$("repo").value=repo;
+ 
+ 
+if(branch)
+$("branch").value=branch;
+ 
+ 
+if(token)
+$("token").value=token;
+ 
+})();
+ 
+</script>
+ 
+</body>
+</html>
