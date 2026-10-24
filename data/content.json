@@ -32,7 +32,7 @@
       "id": "pharmacy",
       "title": "Pharmacy",
       "description": "Trusted medicines and responsible pharmacy services supporting safer, more convenient care.",
-      "image": "uploads/services/1792731317649-IMG_5637.jpeg",
+      "image": "services-pharmacy.jpeg",
       "offerings": [],
       "name": "Pharmacy",
       "shortDescription": "Trusted medicines and responsible pharmacy services supporting safer, more convenient care."
@@ -41,7 +41,7 @@
       "id": "laboratory",
       "title": "Health Laboratory",
       "description": "Accurate diagnostic insights that help clinicians and patients make informed decisions.",
-      "image": "uploads/services/1792731302909-IMG_5639.jpeg",
+      "image": "services-health-laboratory.jpeg",
       "offerings": [],
       "name": "Health Laboratory",
       "shortDescription": "Accurate diagnostic insights that help clinicians and patients make informed decisions."
