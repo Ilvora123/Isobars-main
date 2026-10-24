@@ -42,7 +42,25 @@
   "careers": {
     "vacancies": []
   },
-  "opportunity": [],
+  "opportunity": [
+    {
+      "name": "St Mary’s Apollo Hospital ",
+      "status": "Open",
+      "location": "Thenkasi",
+      "link": "#contact",
+      "description": "Up coming new project inviting shareholders.\n120 bedded multi-specialty hospital in thenkasi.  Inviting shareholders to place an investment of 12%.\n80% work is completed.",
+      "images": [
+        "assets/uploads/1792877833582-skt9b-IMG_5514.jpeg",
+        "assets/uploads/1792877862227-kyccg-IMG_5513.jpeg"
+      ],
+      "pdfs": [
+        {
+          "name": "Apollo_St_Marys_ILVORA_Investor_Proposal_Final_Year2_Profit_Share.pdf",
+          "url": "assets/uploads/1792877921707-awk79-Apollo_St_Marys_ILVORA_Investor_Proposal_Final_Year2_Profit_Share.pdf"
+        }
+      ]
+    }
+  ],
   "gallery": [],
   "announcements": []
 }
