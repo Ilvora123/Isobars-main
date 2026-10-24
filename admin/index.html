@@ -514,6 +514,7 @@ onclick="showTab('gallery',this)"
 >
 Gallery &amp; Media
 </button>
+<button class="tab" onclick="showTab('announcements',this)">Announcements</button>
 
 
 <button
@@ -672,6 +673,14 @@ Save Gallery
 
 </div>
 
+
+<!-- ANNOUNCEMENTS -->
+<div class="panel" id="announcements">
+<h2>Announcements</h2>
+<p class="muted">Publish website announcements with animated transitions and up to 3 images each.</p>
+<div id="announcementsList"></div>
+<div class="actions"><button class="btn gold" onclick="addAnnouncement()">+ Add Announcement</button><button class="btn gold" onclick="saveContent()">Save Announcements</button></div>
+</div>
 
 <!-- COMPANY -->
 
@@ -969,11 +978,16 @@ content=
 JSON.parse(decoded);
 
 
-content.services=(Array.isArray(content.services)?content.services:[]).map((x,i)=>({...x,name:x.name||x.title||'Service',shortDescription:x.shortDescription||x.description||'',description:x.description||x.shortDescription||'',image:x.image||''}));
-content.careers=Array.isArray(content.careers)?content.careers:(content.careers?.vacancies||[]);
-content.opportunity=Array.isArray(content.opportunity)?content.opportunity:(content.opportunity?.projects||[]);
-content.gallery=Array.isArray(content.gallery)?content.gallery:[];
-content.company=content.company||{};
+content.services||=[];
+
+content.careers||=[];
+
+content.opportunity||=[];
+
+content.gallery||=[];
+content.announcements||=[];
+
+content.company||={};
 
 
 sessionStorage.setItem(
@@ -1085,89 +1099,175 @@ renderCompany();
 }
 
 
+
+async function uploadImages(group,index,inputFiles){
+ const files=Array.from(inputFiles||[]).slice(0, group==='announcements'?3:5);
+ if(!files.length)return;
+ const owner=$("owner").value.trim(), repo=$("repo").value.trim(), branch=$("branch").value.trim(), token=$("token").value.trim();
+ if(!token){alert("Connect to GitHub first.");return;}
+ const target=group==='services'?content.services[index]:(group==='opportunity'?content.opportunity[index]:content.announcements[index]);
+ target.images=Array.isArray(target.images)?target.images:[];
+ for(const file of files){
+   if(!file.type.startsWith('image/')){alert(file.name+' is not an image.');continue;}
+   if(file.size>8*1024*1024){alert(file.name+' is over 8 MB. Please choose a smaller image.');continue;}
+   const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(file)});
+   const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-');
+   const path='assets/uploads/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'-'+safe;
+   const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Upload ILVORA website image',content:dataUrl,branch})});
+   if(!res.ok){let e={};try{e=await res.json()}catch(_){};throw new Error(e.message||'Image upload failed');}
+   target.images.push(path);
+ }
+ if(group==='services')renderServices(); else if(group==='opportunity')renderOpportunity(); else renderAnnouncements();
+ alert('Image upload finished. Remember to click Save Content to publish the content changes.');
+}
+function removeImage(group,index,imageIndex){
+ const target=group==='services'?content.services[index]:(group==='opportunity'?content.opportunity[index]:content.announcements[index]);
+ target.images.splice(imageIndex,1);
+ if(group==='services')renderServices(); else if(group==='opportunity')renderOpportunity(); else renderAnnouncements();
+}
+function renderAnnouncements(){
+ const list=$('announcementsList'); if(!list)return; list.innerHTML='';
+ content.announcements=Array.isArray(content.announcements)?content.announcements:[];
+ if(!content.announcements.length){list.innerHTML='<div class="empty">No announcements yet.</div>';return;}
+ content.announcements.forEach((item,index)=>{
+ const imgs=(item.images||[]).map((url,j)=>`<div class="field"><label>Image ${j+1}</label><div>${escapeHtml(url)}</div><button class="btn red" onclick="removeImage('announcements',${index},${j})">Remove image</button></div>`).join('');
+ list.innerHTML+=`<div class="item"><div class="item-header"><strong>Announcement ${index+1}</strong><button class="btn red" onclick="removeAnnouncement(${index})">Delete</button></div><div class="grid"><div class="field"><label>Title</label><input value="${escapeHtml(item.title||'')}" oninput="content.announcements[${index}].title=this.value"></div><div class="field"><label>Date / label</label><input value="${escapeHtml(item.date||'')}" oninput="content.announcements[${index}].date=this.value"></div><div class="field full"><label>Announcement text</label><textarea oninput="content.announcements[${index}].text=this.value">${escapeHtml(item.text||'')}</textarea></div><div class="field full"><label>Add up to 3 images</label><input type="file" accept="image/*" multiple onchange="uploadImages('announcements',${index},this.files)"><small>Up to 3 images total. Uploaded files are stored in the repository.</small></div><div class="field full">${imgs}</div></div></div>`;
+ });
+}
+function addAnnouncement(){content.announcements=content.announcements||[];content.announcements.push({title:'New announcement',date:'',text:'',images:[]});renderAnnouncements();}
+function removeAnnouncement(i){if(confirm('Delete this announcement?')){content.announcements.splice(i,1);renderAnnouncements();}}
+
 /* SERVICES */
 
 function renderServices(){
- const list=$("servicesList");
- list.innerHTML="";
- if(!Array.isArray(content.services)||!content.services.length){
-  list.innerHTML='<div class="empty">No services added yet.</div>';
-  return;
- }
- content.services.forEach((item,index)=>{
-  item.offerings=Array.isArray(item.offerings)?item.offerings:[];
-  list.innerHTML+=`
-  <div class="item">
-   <div class="item-header"><strong>Service category ${index+1}</strong><button class="btn red" onclick="removeService(${index})">Delete category</button></div>
-   <div class="grid">
-    <div class="field"><label>Category name</label><input value="${escapeHtml(item.name||item.title||'')}" oninput="content.services[${index}].name=this.value;content.services[${index}].title=this.value"></div>
-    <div class="field"><label>Short description</label><input value="${escapeHtml(item.shortDescription||item.description||'')}" oninput="content.services[${index}].shortDescription=this.value"></div>
-    <div class="field full"><label>Full description</label><textarea oninput="content.services[${index}].description=this.value">${escapeHtml(item.description||item.shortDescription||'')}</textarea></div>
-    <div class="field full"><label>Category image path / URL</label><input value="${escapeHtml(item.image||'')}" placeholder="uploads/services/image-name.jpg" oninput="content.services[${index}].image=this.value"><small>Use the upload button below to upload a new category image.</small></div>
-   </div>
-   <div class="item" style="margin-top:16px;background:#fbfaf7;border:1px solid #e4e8e7">
-    <div class="item-header"><strong>Items under this category</strong><button class="btn" onclick="addServiceOffering(${index})">+ Add item</button></div>
-    <p class="muted">Add and edit the individual services, descriptions, images, videos and public PDF documents shown when visitors open this category.</p>
-    <div id="serviceOfferings-${index}">${renderServiceOfferingMarkup(item,index)}</div>
-   </div>
-  </div>`;
- });
+
+const list=
+$("servicesList");
+
+list.innerHTML="";
+
+
+if(!content.services.length){
+
+list.innerHTML=
+'<div class="empty">'+
+'No services added yet.'+
+'</div>';
+
+return;
+
 }
-function renderServiceOfferingMarkup(item,serviceIndex){
- const offers=Array.isArray(item.offerings)?item.offerings:[];
- if(!offers.length)return '<div class="empty">No items added under this category yet.</div>';
- return offers.map((o,oi)=>{
-  if(typeof o==='string')o={title:o};
-  return `<div class="item" style="margin:10px 0;background:#fff">
-   <div class="item-header"><strong>${escapeHtml(o.title||('Item '+(oi+1)))}</strong><button class="btn red" onclick="removeServiceOffering(${serviceIndex},${oi})">Delete item</button></div>
-   <div class="grid">
-    <div class="field"><label>Item / service title</label><input value="${escapeHtml(o.title||'')}" oninput="content.services[${serviceIndex}].offerings[${oi}].title=this.value"></div>
-    <div class="field"><label>Image path / URL</label><input value="${escapeHtml(o.image||'')}" placeholder="uploads/services/example.jpg" oninput="content.services[${serviceIndex}].offerings[${oi}].image=this.value"></div>
-    <div class="field full"><label>Description</label><textarea oninput="content.services[${serviceIndex}].offerings[${oi}].description=this.value">${escapeHtml(o.description||'')}</textarea></div>
-    <div class="field"><label>Video path / URL (optional)</label><input value="${escapeHtml(o.video||'')}" placeholder="uploads/services/example.mp4" oninput="content.services[${serviceIndex}].offerings[${oi}].video=this.value"></div>
-    <div class="field"><label>PDF path / URL (optional)</label><input value="${escapeHtml(o.pdf||'')}" placeholder="uploads/services/document.pdf" oninput="content.services[${serviceIndex}].offerings[${oi}].pdf=this.value"></div>
-    <div class="field full"><label>Upload files for this item</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
-      <label class="btn" style="display:inline-block;cursor:pointer">Upload image<input type="file" accept="image/*" hidden onchange="uploadServiceOfferingAsset(${serviceIndex},${oi},'image',this)"></label>
-      <label class="btn" style="display:inline-block;cursor:pointer">Upload video<input type="file" accept="video/*" hidden onchange="uploadServiceOfferingAsset(${serviceIndex},${oi},'video',this)"></label>
-      <label class="btn" style="display:inline-block;cursor:pointer">Upload PDF<input type="file" accept=".pdf,application/pdf" hidden onchange="uploadServiceOfferingAsset(${serviceIndex},${oi},'pdf',this)"></label>
-    </div><small>Uploads are public on the website. Upload limit: 20 MB per file.</small></div>
-   </div>
-  </div>`;
- }).join('');
+
+
+content.services.forEach(
+(item,index)=>{
+
+list.innerHTML+=`
+
+<div class="item">
+
+<div class="item-header">
+
+<strong>
+Service ${index+1}
+</strong>
+
+<button
+class="btn red"
+onclick="removeService(${index})"
+>
+Delete
+</button>
+
+</div>
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+Service Name
+</label>
+
+<input
+value="${escapeHtml(item.name)}"
+oninput="
+content.services[${index}].name=this.value
+"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Short Description
+</label>
+
+<input
+value="${escapeHtml(item.shortDescription)}"
+oninput="
+content.services[${index}].shortDescription=this.value
+"
+>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+Description
+</label>
+
+<textarea
+oninput="
+content.services[${index}].description=this.value
+"
+>${escapeHtml(item.description)}</textarea>
+
+</div>
+<div class="field full"><label>Photos (up to 5)</label><input type="file" accept="image/*" multiple onchange="uploadImages('services',${index},this.files)"><small>${(item.images||[]).length} photo(s) uploaded</small>${(item.images||[]).map((u,j)=>`<div>${escapeHtml(u)} <button class="btn red" onclick="removeImage('services',${index},${j})">Remove</button></div>`).join('')}</div>
+
+</div>
+
+</div>
+
+`;
+
 }
-function addServiceOffering(serviceIndex){
- const service=content.services[serviceIndex];
- service.offerings=Array.isArray(service.offerings)?service.offerings:[];
- service.offerings.push({title:'New service item',description:'',image:'',video:'',pdf:''});
- renderServices();
+
+);
+
 }
-function removeServiceOffering(serviceIndex,offeringIndex){
- if(!confirm('Delete this item from the service category?'))return;
- content.services[serviceIndex].offerings.splice(offeringIndex,1);
- renderServices();
-}
-async function uploadServiceOfferingAsset(serviceIndex,offeringIndex,field,input){
- const file=input.files&&input.files[0]; if(!file)return;
- const folder='services';
- try{
-  if(field==='image'&&!file.type.startsWith('image/'))throw new Error('Choose an image file.');
-  if(field==='video'&&!file.type.startsWith('video/'))throw new Error('Choose a video file.');
-  if(field==='pdf'&&file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf'))throw new Error('Choose a PDF file.');
-  const path=await uploadAsset(file,folder);
-  const offering=content.services[serviceIndex].offerings[offeringIndex];
-  offering[field]=path;
-  renderServices();
-  showMessage('Uploaded '+file.name+'. Click Save Services to publish the updated item.','success');
- }catch(e){showMessage('Upload failed: '+e.message,'error');}
- finally{input.value='';}
-}
+
+
 function addService(){
- content.services.push({name:'New Service Category',title:'New Service Category',shortDescription:'',description:'',image:'',offerings:[]});
- renderServices();
+
+content.services.push({name:"New Service",shortDescription:"",description:"",images:[]});
+
+renderServices();
+
 }
+
+
 function removeService(i){
- if(confirm('Delete this service category and its items?')){content.services.splice(i,1);renderServices();}
+
+if(
+confirm("Delete this service?")
+){
+
+content.services.splice(i,1);
+
+renderServices();
+
 }
+
+}
+
 
 /* CAREERS */
 
@@ -1323,10 +1423,7 @@ type:"",
 
 link:"",
 
-description:"",
-image:"",
-pdf:"",
-video:""
+description:""
 
 });
 
@@ -1475,19 +1572,7 @@ content.opportunity[${index}].description=this.value
 >${escapeHtml(item.description)}</textarea>
 
 </div>
-
-<div class="field full">
-<label>Project image path</label>
-<input value="${escapeHtml(item.image||'')}" placeholder="Uploaded image path will appear here" oninput="content.opportunity[${index}].image=this.value">
-</div>
-<div class="field full">
-<label>Project PDF path</label>
-<input value="${escapeHtml(item.pdf||'')}" placeholder="Uploaded PDF path will appear here" oninput="content.opportunity[${index}].pdf=this.value">
-</div>
-<div class="field full">
-<label>Project video path</label>
-<input value="${escapeHtml(item.video||'')}" placeholder="Uploaded video path will appear here" oninput="content.opportunity[${index}].video=this.value">
-</div>
+<div class="field full"><label>Project photos (up to 5)</label><input type="file" accept="image/*" multiple onchange="uploadImages('opportunity',${index},this.files)"><small>${(item.images||[]).length} photo(s) uploaded</small>${(item.images||[]).map((u,j)=>`<div>${escapeHtml(u)} <button class="btn red" onclick="removeImage('opportunity',${index},${j})">Remove</button></div>`).join('')}</div>
 
 </div>
 
@@ -1504,19 +1589,7 @@ content.opportunity[${index}].description=this.value
 
 function addOpportunity(){
 
-content.opportunity.push({
-
-name:"New Project",
-
-status:"Open",
-
-location:"",
-
-link:"",
-
-description:""
-
-});
+content.opportunity.push({name:"New Project",status:"Open",location:"",link:"#contact",description:"",images:[]});
 
 renderOpportunity();
 
@@ -1611,12 +1684,6 @@ ${item.type==="video"?"selected":""}
 >
 Video
 </option>
-<option
-value="pdf"
-${item.type==="pdf"?"selected":""}
->
-PDF document
-</option>
 
 </select>
 
@@ -1638,10 +1705,6 @@ content.gallery[${index}].title=this.value
 
 </div>
 
-<div class="field full">
-<label>Impact gallery caption (optional)</label>
-<input value="${escapeHtml(item.caption||'')}" oninput="content.gallery[${index}].caption=this.value" placeholder="Short caption shown below the media">
-</div>
 
 <div class="field full">
 
@@ -1654,7 +1717,7 @@ value="${escapeHtml(item.url)}"
 oninput="
 content.gallery[${index}].url=this.value
 "
-placeholder="uploads/gallery/your-file-name.jpg or video path"
+placeholder="/Isobars-main/filename.jpg"
 >
 
 </div>
@@ -1680,7 +1743,7 @@ content.gallery.push({
 type:"image",
 
 title:"",
-caption:"",
+
 url:""
 
 });
@@ -1820,16 +1883,18 @@ return;
 
 try{
 
-const publishContent={...content,
- services:(content.services||[]).map(x=>({...x,title:x.title||x.name||'Healthcare Service',name:x.name||x.title||'Healthcare Service',description:x.description||x.shortDescription||'',shortDescription:x.shortDescription||x.description||''})),
- careers:{...(content.careersMeta||{}),vacancies:content.careers||[]},
- opportunity:{...(content.opportunityMeta||{}),projects:(content.opportunity||[]).map(x=>({...x,title:x.title||x.name,name:x.name||x.title}))},
- gallery:content.gallery||[],
- company:content.company||{}
-};
-delete publishContent.careersMeta; delete publishContent.opportunityMeta;
 const encoded=
-btoa(unescape(encodeURIComponent(JSON.stringify(publishContent,null,2))));
+btoa(
+unescape(
+encodeURIComponent(
+JSON.stringify(
+content,
+null,
+2
+)
+)
+)
+);
 
 
 const response=
@@ -1925,99 +1990,6 @@ error.message
 }
 
 }
-
-
-
-/* PUBLIC MEDIA UPLOADS: files are committed to this repository and become public. */
-function uploadContextForList(listId,index){
- if(listId==='servicesList') return [{field:'image',folder:'services',accept:'image/*',label:'Upload category image'}];
- if(listId==='careersList') return [{field:'pdf',folder:'careers',accept:'.pdf,application/pdf',label:'Upload job PDF'}];
- if(listId==='opportunityList') return [
-  {field:'image',folder:'projects',accept:'image/*',label:'Upload project image'},
-  {field:'pdf',folder:'projects',accept:'.pdf,application/pdf',label:'Upload project PDF'},
-  {field:'video',folder:'projects',accept:'video/*',label:'Upload project video'}
- ];
- if(listId==='galleryList') return [
-  {field:'url',folder:'gallery',accept:'image/*',label:'Upload gallery image',type:'image'},
-  {field:'url',folder:'gallery',accept:'video/*',label:'Upload gallery video',type:'video'}
- ];
- return [];
-}
-function githubPathForAsset(folder,file){
- const clean=String(file.name||'file').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(-110)||'file';
- return `uploads/${folder}/${Date.now()}-${clean}`;
-}
-async function uploadAsset(file,folder){
- const owner=sessionStorage.getItem('ilvora_owner')||$('owner').value.trim();
- const repo=sessionStorage.getItem('ilvora_repo')||$('repo').value.trim();
- const branch=sessionStorage.getItem('ilvora_branch')||$('branch').value.trim();
- const token=sessionStorage.getItem('ilvora_token')||$('token').value.trim();
- if(!owner||!repo||!branch||!token) throw new Error('Connect to GitHub before uploading.');
- if(file.size>20*1024*1024) throw new Error('Please choose a file smaller than 20 MB for this browser-based upload.');
- const path=githubPathForAsset(folder,file);
- const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Could not read selected file.'));reader.readAsDataURL(file);});
- const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:`Upload ILVORA ${folder} asset: ${file.name}`,content:base64,branch})});
- const data=await res.json(); if(!res.ok) throw new Error(data.message||'GitHub file upload failed.');
- return path;
-}
-function currentRecord(listId,index){
- if(listId==='servicesList') return content.services[index];
- if(listId==='careersList') return content.careers[index];
- if(listId==='opportunityList') return content.opportunity[index];
- if(listId==='galleryList') return content.gallery[index];
-}
-function syncUploadField(listId,index,field,path,type){
- const rec=currentRecord(listId,index); if(!rec)return;
- rec[field]=path;
- if(type)rec.type=type;
- const item=document.querySelectorAll('#'+listId+' .item')[index];
- if(item){
-  const inputs=item.querySelectorAll('input');
-  // Keep the editable path field in sync with the uploaded file.
-  if(listId==='galleryList'){
-   const urlInput=Array.from(inputs).find(x=>x.placeholder&&x.placeholder.includes('uploads/gallery'));
-   if(urlInput)urlInput.value=path;
-   const typeSelect=item.querySelector('select');if(typeSelect&&type)typeSelect.value=type;
-  } else if(listId==='opportunityList') {
-   const labelMap={image:'Project image path',pdf:'Project PDF path',video:'Project video path'};
-   const label=labelMap[field];
-   if(label){const lab=Array.from(item.querySelectorAll('label')).find(x=>x.textContent.trim()===label);const input=lab&&lab.parentElement.querySelector('input');if(input)input.value=path;}
-  }
-  item.querySelectorAll('[data-upload-status]').forEach(x=>x.textContent='Uploaded: '+path+' — click Save to publish the link.');
- }
- showMessage('File uploaded to '+path+'. Click Save to publish its content link.','success');
-}
-function installUploadControls(){
- ['servicesList','careersList','opportunityList','galleryList'].forEach(listId=>{
-  const list=$(listId); if(!list)return;
-  Array.from(list.querySelectorAll('.item')).forEach((item,index)=>{
-   if(item.dataset.uploadControls==='yes')return;
-   const specs=uploadContextForList(listId,index); if(!specs.length)return;
-   item.dataset.uploadControls='yes';
-   const wrap=document.createElement('div');wrap.className='field full';
-   wrap.style.cssText='margin-top:12px;padding-top:12px;border-top:1px solid #e7e5df';
-   wrap.innerHTML='<label>Upload media / documents</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div><small data-upload-status style="display:block;margin-top:7px;color:#52706a">Files uploaded here will be publicly accessible on the website.</small>';
-   const buttons=wrap.querySelector('div');
-   specs.forEach(spec=>{
-    const input=document.createElement('input');input.type='file';input.accept=spec.accept;input.hidden=true;
-    const button=document.createElement('button');button.type='button';button.className='btn';button.textContent=spec.label;
-    button.addEventListener('click',()=>input.click());
-    input.addEventListener('change',async()=>{
-     const file=input.files&&input.files[0];if(!file)return;
-     button.disabled=true;button.textContent='Uploading…';
-     try{const path=await uploadAsset(file,spec.folder);syncUploadField(listId,index,spec.field,path,spec.type);}
-     catch(e){showMessage('Upload failed: '+e.message,'error');}
-     finally{button.disabled=false;button.textContent=spec.label;input.value='';}
-    });
-    buttons.append(button,input);
-   });
-   item.appendChild(wrap);
-  });
- });
-}
-const uploadObserver=new MutationObserver(()=>installUploadControls());
-['servicesList','careersList','opportunityList','galleryList'].forEach(id=>{const el=$(id);if(el)uploadObserver.observe(el,{childList:true});});
-setTimeout(installUploadControls,0);
 
 
 /* DISCONNECT */
