@@ -50,18 +50,17 @@
   "careers": {
     "vacancies": []
   },
-  "opportunity": {
-    "projects": [
-      {
-        "name": "St Mary’s Apollo Hospitals ",
-        "status": "Open",
-        "location": "Thenkasi ",
-        "link": "Connect with us",
-        "description": "Selling a share of 12% on up coming project in Thenkasi.\nA 120 Bedded multi-speciality hospital  under construction. Around 80% of work is completed. \nFor more information kindly please contact with us.\nMore images and details will be shared",
-        "title": "St Mary’s Apollo Hospitals "
-      }
-    ]
-  },
+  "opportunity": [
+    {
+      "name": "St Mary’s Apollo Hospitals ",
+      "status": "Open",
+      "location": "Thenkasi ",
+      "link": "Connect with us",
+      "description": "Selling a share of 12% on up coming project in Thenkasi.\nA 120 Bedded multi-speciality hospital  under construction. Around 80% of work is completed. \nFor more information kindly please contact with us.\nMore images and details will be shared",
+      "title": "St Mary’s Apollo Hospitals ",
+      "images": []
+    }
+  ],
   "gallery": [],
   "announcements": []
 }
