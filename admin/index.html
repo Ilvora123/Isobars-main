@@ -310,6 +310,17 @@ button{
     display:none;
   }
 }
+
+/* Mobile layout fixes: keep all fields inside cards */
+*,*::before,*::after{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}
+input,textarea,select,button{max-width:100%;min-width:0}.field,input,textarea,select{width:100%;min-width:0}
+.grid{min-width:0}.item,.card,.panel{min-width:0;max-width:100%}
+.tabs{display:flex;gap:8px;overflow-x:auto;max-width:100%;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.tab{flex:0 0 auto;white-space:nowrap}.brand{min-width:0;flex-wrap:wrap}.brand h1,.brand span{overflow-wrap:anywhere}
+.brand-logo,.login-logo{object-fit:contain;flex-shrink:0}.field input[type=file]{padding:10px;font-size:14px}
+.asset-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;overflow-wrap:anywhere}.asset-row span{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+@media(max-width:600px){.wrap{width:calc(100% - 20px)}.card{padding:14px}.brand{gap:10px}.brand-logo{width:48px;height:48px}.field{min-width:0}.item{padding:12px}.actions{flex-wrap:wrap}}
+
 </style>
 </head>
 
@@ -848,6 +859,28 @@ Disconnect
 let content={};
 
 let fileSha="";
+let pendingAssetDeletes=[];
+function collectAssetPaths(value,out=[]){
+ if(!value)return out;
+ if(typeof value==="string"){if(/^(assets\/uploads\/|uploads\/)/.test(value))out.push(value);return out;}
+ if(Array.isArray(value)){value.forEach(v=>collectAssetPaths(v,out));return out;}
+ if(typeof value==="object")Object.values(value).forEach(v=>collectAssetPaths(v,out));
+ return out;
+}
+function queueAssetDeletes(value){pendingAssetDeletes.push(...collectAssetPaths(value));}
+function contentStillUsesPath(path){return collectAssetPaths(content,[]).includes(path);}
+async function deleteUnreferencedAssets(){
+ const owner=$("owner").value.trim(),repo=$("repo").value.trim(),branch=$("branch").value.trim(),token=$("token").value.trim();
+ const paths=[...new Set(pendingAssetDeletes)].filter(path=>!contentStillUsesPath(path));pendingAssetDeletes=[];
+ for(const path of paths){try{
+  const base=`https://api.github.com/repos/${owner}/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}`;
+  const get=await fetch(base+`?ref=${encodeURIComponent(branch)}`,{headers:{Authorization:"Bearer "+token,Accept:"application/vnd.github+json"}});
+  if(get.status===404)continue;if(!get.ok)throw new Error("Could not look up "+path);
+  const file=await get.json();
+  const del=await fetch(base,{method:"DELETE",headers:{Authorization:"Bearer "+token,Accept:"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Remove unused ILVORA upload",sha:file.sha,branch})});
+  if(!del.ok&&del.status!==404)throw new Error("Could not delete "+path);
+ }catch(e){console.warn("Asset cleanup:",path,e);}}
+}
 
 
 const $=id=>
@@ -983,12 +1016,12 @@ JSON.parse(decoded);
 
 content.services||=[];
 
-content.careers||=[];
+content.careers=Array.isArray(content.careers)?content.careers:(content.careers&&Array.isArray(content.careers.vacancies)?content.careers.vacancies:[]);
 
 content.opportunity=Array.isArray(content.opportunity)?content.opportunity:(content.opportunity&&Array.isArray(content.opportunity.projects)?content.opportunity.projects:[]);
 
 content.gallery||=[];
-content.announcements||=[];
+content.announcements=Array.isArray(content.announcements)?content.announcements:[];
 
 content.company||={};
 
@@ -1097,6 +1130,8 @@ renderOpportunity();
 
 renderGallery();
 
+renderAnnouncements();
+
 renderCompany();
 
 }
@@ -1169,7 +1204,7 @@ async function uploadOfferingImages(serviceIndex,offeringIndex,inputFiles){
 }
 function removeImage(group,index,imageIndex){
  const target=group==='services'?content.services[index]:(group==='opportunity'?content.opportunity[index]:content.announcements[index]);
- target.images.splice(imageIndex,1);
+ queueAssetDeletes(target.images[imageIndex]);target.images.splice(imageIndex,1);
  if(group==='services')renderServices(); else if(group==='opportunity')renderOpportunity(); else renderAnnouncements();
 }
 function renderAnnouncements(){
@@ -1182,7 +1217,7 @@ function renderAnnouncements(){
  });
 }
 function addAnnouncement(){content.announcements=content.announcements||[];content.announcements.push({title:'New announcement',date:'',text:'',images:[]});renderAnnouncements();}
-function removeAnnouncement(i){if(confirm('Delete this announcement?')){content.announcements.splice(i,1);renderAnnouncements();}}
+function removeAnnouncement(i){if(confirm('Delete this announcement?')){queueAssetDeletes(content.announcements[i]);content.announcements.splice(i,1);renderAnnouncements();}}
 
 /* SERVICES */
 
@@ -1294,8 +1329,8 @@ content.services[${index}].description=this.value
 
 
 function addOffering(serviceIndex){content.services[serviceIndex].offerings=Array.isArray(content.services[serviceIndex].offerings)?content.services[serviceIndex].offerings:[];content.services[serviceIndex].offerings.push({title:"New service",description:"",images:[],image:"",video:"",pdf:""});renderServices();}
-function removeOffering(serviceIndex,offeringIndex){if(confirm("Delete this sub-service?")){content.services[serviceIndex].offerings.splice(offeringIndex,1);renderServices();}}
-function removeOfferingImage(serviceIndex,offeringIndex,imageIndex){const o=content.services[serviceIndex].offerings[offeringIndex];o.images=Array.isArray(o.images)?o.images:(o.image?[o.image]:[]);o.images.splice(imageIndex,1);o.image=o.images[0]||"";renderServices();}
+function removeOffering(serviceIndex,offeringIndex){if(confirm("Delete this sub-service?")){queueAssetDeletes(content.services[serviceIndex].offerings[offeringIndex]);content.services[serviceIndex].offerings.splice(offeringIndex,1);renderServices();}}
+function removeOfferingImage(serviceIndex,offeringIndex,imageIndex){const o=content.services[serviceIndex].offerings[offeringIndex];o.images=Array.isArray(o.images)?o.images:(o.image?[o.image]:[]);queueAssetDeletes(o.images[imageIndex]);o.images.splice(imageIndex,1);o.image=o.images[0]||"";renderServices();}
 
 function addService(){
 
@@ -1312,6 +1347,7 @@ if(
 confirm("Delete this service?")
 ){
 
+queueAssetDeletes(content.services[i]);
 content.services.splice(i,1);
 
 renderServices();
@@ -1449,6 +1485,12 @@ content.careers[${index}].description=this.value
 
 </div>
 
+<div class="field full">
+<label>Job description PDF (optional)</label>
+<input type="file" accept=".pdf,application/pdf" onchange="uploadCareerPdf(${index},this)">
+${item.pdf?`<div class="asset-row"><span>${escapeHtml(item.pdf)}</span><button class="btn red" onclick="removeCareerPdf(${index})">Remove PDF</button></div>`:''}
+<small>Upload a public PDF for this vacancy, then click Save Careers.</small>
+</div>
 
 </div>
 
@@ -1462,6 +1504,21 @@ content.careers[${index}].description=this.value
 
 }
 
+async function uploadCareerPdf(index,input){
+ const file=input.files&&input.files[0];if(!file)return;
+ if(file.type!=="application/pdf"&&!/\.pdf$/i.test(file.name)){alert("Choose a PDF file.");input.value="";return;}
+ if(file.size>20*1024*1024){alert("Please choose a PDF smaller than 20 MB.");input.value="";return;}
+ const owner=$("owner").value.trim(),repo=$("repo").value.trim(),branch=$("branch").value.trim(),token=$("token").value.trim();
+ try{
+  const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(",")[1]);r.onerror=reject;r.readAsDataURL(file)});
+  const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"-");
+  const path="assets/uploads/"+Date.now()+"-"+Math.random().toString(36).slice(2,7)+"-"+safe;
+  const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:"PUT",headers:{Authorization:"Bearer "+token,Accept:"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Upload ILVORA career PDF",content:dataUrl,branch})});
+  if(!res.ok){let e={};try{e=await res.json()}catch(_){}throw new Error(e.message||"PDF upload failed.");}
+  content.careers[index].pdf=path;renderCareers();alert("PDF uploaded. Click Save Careers to publish.");
+ }catch(e){alert("PDF upload failed: "+e.message);}finally{input.value="";}
+}
+function removeCareerPdf(index){queueAssetDeletes(content.careers[index].pdf);delete content.careers[index].pdf;renderCareers();}
 
 function addCareer(){
 
@@ -1490,6 +1547,7 @@ if(
 confirm("Delete this job opening?")
 ){
 
+queueAssetDeletes(content.careers[i]);
 content.careers.splice(i,1);
 
 renderCareers();
@@ -1640,7 +1698,7 @@ content.opportunity[${index}].description=this.value
 }
 
 
-function removeOpportunityPdf(index,pdfIndex){const item=content.opportunity[index];item.pdfs=Array.isArray(item.pdfs)?item.pdfs:[];item.pdfs.splice(pdfIndex,1);renderOpportunity();}
+function removeOpportunityPdf(index,pdfIndex){const item=content.opportunity[index];item.pdfs=Array.isArray(item.pdfs)?item.pdfs:[];queueAssetDeletes(item.pdfs[pdfIndex]);item.pdfs.splice(pdfIndex,1);renderOpportunity();}
 
 function addOpportunity(){
 
@@ -1657,6 +1715,7 @@ if(
 confirm("Delete this opportunity?")
 ){
 
+queueAssetDeletes(content.opportunity[i]);
 content.opportunity.splice(i,1);
 
 renderOpportunity();
@@ -1814,6 +1873,7 @@ if(
 confirm("Delete this media?")
 ){
 
+queueAssetDeletes(content.gallery[i]);
 content.gallery.splice(i,1);
 
 renderGallery();
