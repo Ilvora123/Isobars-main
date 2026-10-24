@@ -16,15 +16,7 @@
       "title": "Hospitals & Clinics",
       "description": "Patient-centred clinical environments designed to bring trusted care closer to communities.",
       "image": "services-hospitals-clinics.jpeg",
-      "offerings": [
-        {
-          "title": "Neelambari Hospital ",
-          "description": "A 25 Bedded Hospital in Thamarakulam ",
-          "image": "uploads/services/1792731275761-IMG_5638.jpeg",
-          "video": "",
-          "pdf": ""
-        }
-      ],
+      "offerings": [],
       "name": "Ilvora health",
       "shortDescription": "Ernakulam "
     },
