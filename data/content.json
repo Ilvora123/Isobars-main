@@ -62,5 +62,16 @@
     }
   ],
   "gallery": [],
-  "announcements": []
+  "announcements": [
+    {
+      "title": "Neelambari Hospital Thamarakulam ",
+      "date": "24/10/2026",
+      "text": "We are happy to inform you that  new partnership with Neelambari hospital Thamarakulam ",
+      "images": [
+        "assets/uploads/1792878272996-9xear-IMG_5639.jpeg",
+        "assets/uploads/1792878278245-2n348-IMG_5638.jpeg",
+        "assets/uploads/1792878283707-k20g4-IMG_5637.jpeg"
+      ]
+    }
+  ]
 }
