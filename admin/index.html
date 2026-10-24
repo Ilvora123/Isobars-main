@@ -53,6 +53,7 @@ header{
   gap:13px;
 }
 
+.logo-fallback{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:#fff;color:#123039;font-weight:800;font-size:12px;letter-spacing:.5px;flex-shrink:0}
 .brand-logo{
   width:50px;
   height:50px;
@@ -322,8 +323,9 @@ button{
 
 <img
 class="brand-logo"
-src="/Isobars-main/ilvora-logo.png"
+src="../ilvora-logo.png"
 alt="ILVORA Healthcare"
+onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span class=\"logo-fallback\">ILVORA</span>')"
 >
 
 <div>
@@ -360,8 +362,9 @@ id="setup"
 
 <img
 class="login-logo"
-src="/Isobars-main/ilvora-logo.png"
+src="../ilvora-logo.png"
 alt="ILVORA Healthcare"
+onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span class=\"logo-fallback\">ILVORA</span>')"
 >
 
 <h2>ILVORA Website Admin</h2>
@@ -982,7 +985,7 @@ content.services||=[];
 
 content.careers||=[];
 
-content.opportunity||=[];
+content.opportunity=Array.isArray(content.opportunity)?content.opportunity:(content.opportunity&&Array.isArray(content.opportunity.projects)?content.opportunity.projects:[]);
 
 content.gallery||=[];
 content.announcements||=[];
