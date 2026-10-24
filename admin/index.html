@@ -1123,6 +1123,50 @@ async function uploadImages(group,index,inputFiles){
  if(group==='services')renderServices(); else if(group==='opportunity')renderOpportunity(); else renderAnnouncements();
  alert('Image upload finished. Remember to click Save Content to publish the content changes.');
 }
+async function uploadOpportunityPdfs(index,inputFiles){
+ const item=content.opportunity[index];
+ if(!item)return;
+ const existing=Array.isArray(item.pdfs)?item.pdfs:[];
+ const slots=Math.max(0,5-existing.length);
+ const files=Array.from(inputFiles||[]).filter(f=>f.type==='application/pdf'||/\.pdf$/i.test(f.name)).slice(0,slots);
+ if(!files.length){alert(existing.length>=5?'Maximum of 5 PDFs already added.':'Please select PDF files.');return;}
+ const owner=$('owner').value.trim(),repo=$('repo').value.trim(),branch=$('branch').value.trim(),token=$('token').value.trim();
+ if(!token){alert('Connect to GitHub first.');return;}
+ item.pdfs=existing;
+ try{
+  for(const file of files){
+   if(file.size>20*1024*1024){alert(file.name+' is over 20 MB. Please choose a smaller PDF.');continue;}
+   const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(file)});
+   const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-');
+   const path='assets/uploads/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'-'+safe;
+   const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Upload ILVORA opportunity PDF',content:dataUrl,branch})});
+   if(!res.ok){let e={};try{e=await res.json()}catch(_){};throw new Error(e.message||'PDF upload failed');}
+   item.pdfs.push({name:file.name,url:path});
+  }
+  renderOpportunity();alert('PDF upload finished. Click Save Opportunities to publish the links.');
+ }catch(e){alert('PDF upload failed: '+e.message);}
+}
+async function uploadOfferingImages(serviceIndex,offeringIndex,inputFiles){
+ const offering=content.services[serviceIndex].offerings[offeringIndex];
+ const existing=Array.isArray(offering.images)?offering.images:(offering.image?[offering.image]:[]);
+ const files=Array.from(inputFiles||[]).filter(f=>f.type.startsWith('image/')).slice(0,Math.max(0,7-existing.length));
+ if(!files.length){alert(existing.length>=7?'Maximum of 7 photos already added.':'Please select image files.');return;}
+ const owner=$('owner').value.trim(),repo=$('repo').value.trim(),branch=$('branch').value.trim(),token=$('token').value.trim();
+ if(!token){alert('Connect to GitHub first.');return;}
+ offering.images=existing;
+ try{
+  for(const file of files){
+   if(file.size>8*1024*1024){alert(file.name+' is over 8 MB. Please choose a smaller image.');continue;}
+   const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(file)});
+   const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-');
+   const path='assets/uploads/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'-'+safe;
+   const res=await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`,{method:'PUT',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Upload ILVORA service offering photo',content:dataUrl,branch})});
+   if(!res.ok){let e={};try{e=await res.json()}catch(_){};throw new Error(e.message||'Image upload failed');}
+   offering.images.push(path);
+  }
+  renderServices();alert('Photo upload finished. Click Save Services to publish.');
+ }catch(e){alert('Photo upload failed: '+e.message);}
+}
 function removeImage(group,index,imageIndex){
  const target=group==='services'?content.services[index]:(group==='opportunity'?content.opportunity[index]:content.announcements[index]);
  target.images.splice(imageIndex,1);
@@ -1233,7 +1277,8 @@ content.services[${index}].description=this.value
 >${escapeHtml(item.description)}</textarea>
 
 </div>
-<div class="field full"><label>Photos (up to 5)</label><input type="file" accept="image/*" multiple onchange="uploadImages('services',${index},this.files)"><small>${(item.images||[]).length} photo(s) uploaded</small>${(item.images||[]).map((u,j)=>`<div>${escapeHtml(u)} <button class="btn red" onclick="removeImage('services',${index},${j})">Remove</button></div>`).join('')}</div>
+<div class="field full"><label>Card photos (up to 5)</label><input type="file" accept="image/*" multiple onchange="uploadImages('services',${index},this.files)"><small>${(item.images||[]).length} photo(s) uploaded</small>${(item.images||[]).map((u,j)=>`<div>${escapeHtml(u)} <button class="btn red" onclick="removeImage('services',${index},${j})">Remove</button></div>`).join('')}</div>
+<div class="field full"><label>Services / projects under this category</label><div>${(item.offerings||[]).map((o,j)=>`<div class="item"><div class="item-header"><strong>Sub-service ${j+1}</strong><button class="btn red" onclick="removeOffering(${index},${j})">Delete</button></div><div class="field"><label>Name</label><input value="${escapeHtml(o.title||'')}" oninput="content.services[${index}].offerings[${j}].title=this.value"></div><div class="field"><label>Description</label><textarea oninput="content.services[${index}].offerings[${j}].description=this.value">${escapeHtml(o.description||'')}</textarea></div><div class="field"><label>Photos (up to 7)</label><input type="file" accept="image/*" multiple onchange="uploadOfferingImages(${index},${j},this.files)"><small>${(o.images|| (o.image?[o.image]:[])).length} of 7 photos</small>${(o.images|| (o.image?[o.image]:[])).map((u,k)=>`<div>${escapeHtml(u)} <button class="btn red" onclick="removeOfferingImage(${index},${j},${k})">Remove photo</button></div>`).join('')}</div></div>`).join('')}</div><button class="btn" onclick="addOffering(${index})">+ Add service under this category</button><small>Examples: individual hospital projects, pharmacy services, laboratory tests. Each entry can have up to 7 photos.</small></div>
 
 </div>
 
@@ -1247,6 +1292,10 @@ content.services[${index}].description=this.value
 
 }
 
+
+function addOffering(serviceIndex){content.services[serviceIndex].offerings=Array.isArray(content.services[serviceIndex].offerings)?content.services[serviceIndex].offerings:[];content.services[serviceIndex].offerings.push({title:"New service",description:"",images:[],image:"",video:"",pdf:""});renderServices();}
+function removeOffering(serviceIndex,offeringIndex){if(confirm("Delete this sub-service?")){content.services[serviceIndex].offerings.splice(offeringIndex,1);renderServices();}}
+function removeOfferingImage(serviceIndex,offeringIndex,imageIndex){const o=content.services[serviceIndex].offerings[offeringIndex];o.images=Array.isArray(o.images)?o.images:(o.image?[o.image]:[]);o.images.splice(imageIndex,1);o.image=o.images[0]||"";renderServices();}
 
 function addService(){
 
@@ -1576,6 +1625,7 @@ content.opportunity[${index}].description=this.value
 
 </div>
 <div class="field full"><label>Project photos (up to 5)</label><input type="file" accept="image/*" multiple onchange="uploadImages('opportunity',${index},this.files)"><small>${(item.images||[]).length} photo(s) uploaded</small>${(item.images||[]).map((u,j)=>`<div>${escapeHtml(u)} <button class="btn red" onclick="removeImage('opportunity',${index},${j})">Remove</button></div>`).join('')}</div>
+<div class="field full"><label>Public downloadable PDFs (up to 5)</label><input type="file" accept="application/pdf,.pdf" multiple onchange="uploadOpportunityPdfs(${index},this.files)"><small>${(item.pdfs||[]).length} of 5 PDF files uploaded. They will appear as download links on the public Opportunity page.</small>${(item.pdfs||[]).map((doc,j)=>`<div>${escapeHtml(typeof doc==='string'?doc:(doc.name||doc.url||'PDF'))} <button class="btn red" onclick="removeOpportunityPdf(${index},${j})">Remove PDF</button></div>`).join('')}</div>
 
 </div>
 
@@ -1589,6 +1639,8 @@ content.opportunity[${index}].description=this.value
 
 }
 
+
+function removeOpportunityPdf(index,pdfIndex){const item=content.opportunity[index];item.pdfs=Array.isArray(item.pdfs)?item.pdfs:[];item.pdfs.splice(pdfIndex,1);renderOpportunity();}
 
 function addOpportunity(){
 
