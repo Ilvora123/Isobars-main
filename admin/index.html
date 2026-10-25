@@ -529,6 +529,7 @@ onclick="showTab('gallery',this)"
 Gallery &amp; Media
 </button>
 <button class="tab" onclick="showTab('announcements',this)">Announcements</button>
+<button class="tab" onclick="showTab('recruitment',this)">Recruitment</button>
 
 
 <button
@@ -694,6 +695,38 @@ Save Gallery
 <p class="muted">Publish website announcements with animated transitions and up to 3 images each.</p>
 <div id="announcementsList"></div>
 <div class="actions"><button class="btn gold" onclick="addAnnouncement()">+ Add Announcement</button><button class="btn gold" onclick="saveContent()">Save Announcements</button></div>
+</div>
+
+
+<!-- RECRUITMENT: separate Cloudflare API section -->
+<div class="panel" id="recruitment">
+  <h2>Recruitment & Applications</h2>
+  <p class="muted">Manage vacancies and candidate applications using the Cloudflare API. Existing GitHub website-content management remains unchanged.</p>
+  <div class="card">
+    <h3>Connect to Recruitment API</h3>
+    <div class="field">
+      <label for="recruitmentPassword">Recruitment admin password</label>
+      <input id="recruitmentPassword" type="password" autocomplete="current-password" placeholder="Cloudflare ADMIN_PASSWORD">
+    </div>
+    <div class="actions">
+      <button class="btn dark" id="recruitmentLoginButton" onclick="recruitmentLogin()">Connect to Recruitment</button>
+      <button class="btn" onclick="recruitmentLogout()">Disconnect Recruitment</button>
+    </div>
+    <div id="recruitmentMessage" aria-live="polite"></div>
+  </div>
+  <div id="recruitmentWorkspace" class="hidden">
+    <div class="card">
+      <h3>Job vacancies</h3>
+      <div class="grid">
+        <div class="field"><label for="vacancyTitle">Job title</label><input id="vacancyTitle" placeholder="e.g. Staff Nurse"></div>
+        <div class="field"><label for="vacancyDepartment">Department</label><input id="vacancyDepartment" placeholder="e.g. Nursing"></div>
+        <div class="field full"><label for="vacancyDescription">Description</label><textarea id="vacancyDescription" placeholder="Responsibilities, qualifications and experience"></textarea></div>
+      </div>
+      <div class="actions"><button class="btn gold" onclick="createRecruitmentVacancy()">Publish vacancy</button><button class="btn" onclick="loadRecruitmentData()">Refresh</button></div>
+      <div id="recruitmentVacancies"></div>
+    </div>
+    <div class="card"><h3>Candidate applications</h3><p class="muted">Candidate details and documents are private. Access them only for recruitment purposes.</p><div id="recruitmentApplications"></div></div>
+  </div>
 </div>
 
 <!-- COMPANY -->
@@ -2104,6 +2137,121 @@ error.message
 
 }
 
+}
+
+
+
+/* CLOUDFlARE RECRUITMENT API — independent from GitHub content management */
+const RECRUITMENT_API = "https://ilvora-healthcare-api.fancy-rice-dc1f.workers.dev";
+let recruitmentToken = "";
+
+function recruitmentMessage(text, error=false) {
+  const el = $("recruitmentMessage");
+  if (el) el.innerHTML = '<div class="notice '+(error?'error':'')+'">'+escapeHtml(text)+'</div>';
+}
+async function recruitmentRequest(path, options={}) {
+  const headers = new Headers(options.headers || {});
+  if (recruitmentToken) headers.set("Authorization", "Bearer " + recruitmentToken);
+  if (options.body && !(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
+  const response = await fetch(RECRUITMENT_API + path, {...options, headers});
+  let data = {}; try { data = await response.json(); } catch (_) {}
+  if (!response.ok) throw new Error(data.error || data.message || ("Request failed ("+response.status+")"));
+  return data;
+}
+async function recruitmentLogin() {
+  const password = $("recruitmentPassword").value;
+  if (!password) return recruitmentMessage("Enter the recruitment admin password.", true);
+  const button = $("recruitmentLoginButton"); button.disabled = true; button.textContent = "Connecting...";
+  try {
+    const response = await fetch(RECRUITMENT_API + "/admin/login", {
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({password})
+    });
+    let data = {}; try { data = await response.json(); } catch (_) {}
+    if (!response.ok || !data.token) throw new Error(data.error || data.message || ("Login failed ("+response.status+")"));
+    recruitmentToken = data.token; $("recruitmentPassword").value = "";
+    $("recruitmentWorkspace").classList.remove("hidden");
+    recruitmentMessage("Connected to the recruitment API.");
+    await loadRecruitmentData();
+  } catch (e) { recruitmentToken = ""; recruitmentMessage("Could not connect: "+e.message, true); }
+  finally { button.disabled = false; button.textContent = "Connect to Recruitment"; }
+}
+function recruitmentLogout() {
+  recruitmentToken = ""; $("recruitmentWorkspace").classList.add("hidden");
+  $("recruitmentPassword").value = ""; $("recruitmentVacancies").innerHTML = "";
+  $("recruitmentApplications").innerHTML = ""; recruitmentMessage("Disconnected from recruitment API.");
+}
+async function loadRecruitmentData() {
+  if (!recruitmentToken) return recruitmentMessage("Connect to Recruitment first.", true);
+  try {
+    const results = await Promise.all([recruitmentRequest("/admin/vacancies"), recruitmentRequest("/admin/applications")]);
+    renderRecruitmentVacancies(results[0].vacancies || []);
+    renderRecruitmentApplications(results[1].applications || []);
+    recruitmentMessage("Recruitment data refreshed.");
+  } catch (e) { recruitmentMessage("Could not load recruitment data: "+e.message, true); }
+}
+async function createRecruitmentVacancy() {
+  const title=$("vacancyTitle").value.trim(), department=$("vacancyDepartment").value.trim(), description=$("vacancyDescription").value.trim();
+  if (!title) return recruitmentMessage("Enter a job title first.", true);
+  try {
+    await recruitmentRequest("/admin/vacancies",{method:"POST",body:JSON.stringify({title,department,description,status:"open"})});
+    $("vacancyTitle").value=""; $("vacancyDepartment").value=""; $("vacancyDescription").value="";
+    await loadRecruitmentData();
+  } catch(e) { recruitmentMessage("Could not publish vacancy: "+e.message,true); }
+}
+function renderRecruitmentVacancies(items) {
+  const el=$("recruitmentVacancies");
+  if (!items.length) { el.innerHTML='<div class="empty">No vacancies found.</div>'; return; }
+  el.innerHTML=items.map(v=>`<div class="item">
+    <div class="item-header"><strong>${escapeHtml(v.title||"Untitled vacancy")}</strong><span class="status">${escapeHtml(v.status||"open")}</span></div>
+    <p><b>Department:</b> ${escapeHtml(v.department||"Not specified")}</p><p>${escapeHtml(v.description||"")}</p>
+    <div class="actions"><button class="btn" onclick="setRecruitmentVacancyStatus('${escapeHtml(v.id)}','${(v.status||"open")==="open"?"closed":"open"}')">${(v.status||"open")==="open"?"Close vacancy":"Reopen vacancy"}</button><button class="btn red" onclick="deleteRecruitmentVacancy('${escapeHtml(v.id)}')">Delete vacancy</button></div>
+  </div>`).join("");
+}
+async function setRecruitmentVacancyStatus(id,status) {
+  try { await recruitmentRequest("/admin/vacancies/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({status})}); await loadRecruitmentData(); }
+  catch(e) { recruitmentMessage("Could not update vacancy: "+e.message,true); }
+}
+async function deleteRecruitmentVacancy(id) {
+  if (!confirm("Delete this vacancy and its associated applications and documents? This cannot be undone.")) return;
+  try { await recruitmentRequest("/admin/vacancies/"+encodeURIComponent(id),{method:"DELETE"}); await loadRecruitmentData(); }
+  catch(e) { recruitmentMessage("Could not delete vacancy: "+e.message,true); }
+}
+function renderRecruitmentApplications(items) {
+  const el=$("recruitmentApplications");
+  if (!items.length) { el.innerHTML='<div class="empty">No applications received yet.</div>'; return; }
+  const statuses=["new","reviewing","shortlisted","rejected","hired"];
+  el.innerHTML=items.map(a=>`<div class="item">
+    <div class="item-header"><strong>${escapeHtml(a.candidate_name||"Candidate")}</strong><span class="status">${escapeHtml(a.status||"new")}</span></div>
+    <p><b>Vacancy ID:</b> ${escapeHtml(a.vacancy_id||"")}</p>
+    <p><b>Email:</b> ${escapeHtml(a.email||"")}<br><b>Phone:</b> ${escapeHtml(a.phone||"")}</p>
+    ${a.address?`<p><b>Address:</b> ${escapeHtml(a.address)}</p>`:""}
+    ${a.qualifications?`<p><b>Qualifications:</b> ${escapeHtml(a.qualifications)}</p>`:""}
+    ${a.experience?`<p><b>Experience:</b> ${escapeHtml(a.experience)}</p>`:""}
+    <div class="field"><label>Application status</label><select id="applicationStatus-${escapeHtml(a.id)}">${statuses.map(s=>`<option value="${s}" ${s===(a.status||"new")?"selected":""}>${s}</option>`).join("")}</select></div>
+    <div class="actions"><button class="btn gold" onclick="updateRecruitmentApplication('${escapeHtml(a.id)}')">Save status</button>
+    ${a.cv_object_key?`<button class="btn" onclick="openRecruitmentFile('${escapeHtml(a.id)}','cv')">Download CV</button>`:""}
+    ${a.education_object_key?`<button class="btn" onclick="openRecruitmentFile('${escapeHtml(a.id)}','education')">Download education document</button>`:""}
+    <button class="btn red" onclick="deleteRecruitmentApplication('${escapeHtml(a.id)}')">Delete application</button></div>
+  </div>`).join("");
+}
+async function updateRecruitmentApplication(id) {
+  const status=$("applicationStatus-"+id).value;
+  try { await recruitmentRequest("/admin/applications/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({status})}); await loadRecruitmentData(); }
+  catch(e) { recruitmentMessage("Could not update application: "+e.message,true); }
+}
+async function openRecruitmentFile(id,kind) {
+  try {
+    const response=await fetch(RECRUITMENT_API+"/admin/applications/"+encodeURIComponent(id)+"/files/"+kind,{headers:{"Authorization":"Bearer "+recruitmentToken}});
+    if (!response.ok) { let d={}; try { d=await response.json(); } catch(_) {} throw new Error(d.error||d.message||("Download failed ("+response.status+")")); }
+    const url=URL.createObjectURL(await response.blob()), link=document.createElement("a");
+    link.href=url; link.download=kind+"-"+id; document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  } catch(e) { recruitmentMessage("Could not download document: "+e.message,true); }
+}
+async function deleteRecruitmentApplication(id) {
+  if (!confirm("Permanently delete this application and its stored documents?")) return;
+  try { await recruitmentRequest("/admin/applications/"+encodeURIComponent(id),{method:"DELETE"}); await loadRecruitmentData(); }
+  catch(e) { recruitmentMessage("Could not delete application: "+e.message,true); }
 }
 
 
