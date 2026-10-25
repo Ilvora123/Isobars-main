@@ -451,7 +451,9 @@ async function loadManagedContent(){
  try{const r=await fetch('data/content.json',{cache:'no-store'});if(r.ok)data=normalizeContent(await r.json());}
  catch(e){}
  renderServices(data.services||defaultContent.services);
- renderVacancies(data.careers?.vacancies||[]);
+ // Recruitment vacancies are loaded only from the live API below; do not overwrite them with local content.json.
+ // This prevents an empty local vacancy list from hiding published openings.
+
  renderGallery(data.gallery||[]);
  renderAnnouncements(data.announcements||[]);
  renderOpportunities(data.opportunity?.projects||[]);
