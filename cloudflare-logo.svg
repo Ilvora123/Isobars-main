@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="120" viewBox="0 0 420 120" role="img" aria-labelledby="title desc">
+<title id="title">Cloudflare</title><desc id="desc">Cloudflare orange cloud symbol and dark wordmark</desc>
+<g fill="#F38020" transform="translate(8 12)">
+<path d="M82 30c-5-15-19-25-36-25-19 0-35 13-39 31C-7 42-9 54-5 65c4 11 14 18 27 18h57c17 0 29-11 29-26 0-13-9-24-26-27z"/>
+<path d="M21 54h76c-2 8-9 14-19 14H18c-7 0-12-4-13-10-1-5 3-10 8-12 2 4 4 6 8 8z" fill="#fff" opacity=".98"/>
+<path d="M19 69h56c-3 7-9 11-17 11H21c-6 0-10-3-11-7 2-2 5-4 9-4z"/>
+</g>
+<text x="126" y="78" font-family="Arial, Helvetica, sans-serif" font-size="49" font-weight="700" letter-spacing="-1.8" fill="#252525">Cloudflare</text>
+</svg>
